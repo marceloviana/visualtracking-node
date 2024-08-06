@@ -1,0 +1,42 @@
+name: PR Checks Infra
+on:
+  pull_request_target:
+    types: [ opened, synchronize, reopened, edited, ready_for_review ]
+    branches: [ main ]
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+  repository-projects: read
+  deployments: write
+
+jobs:
+  tf-checks:
+    name: Terraform PR Checks
+    if: |
+      github.event.repository.name != 'node-ecs-template' &&
+      !contains( github.event.pull_request.title, 'chore(deps)') &&
+      github.event.pull_request.draft == false
+    uses: LatamNutrien/node-ecs-app-pattern-v1/.github/workflows/app-instance-pr-checks-infra.yml@app-instance-pr-checks-infra/1.0
+    with:
+      github-pr-head-sha: ${{ github.event.pull_request.head.sha }}
+      identifier: "${{ github.event.repository.name }}"
+      app_pattern_repo: "LatamNutrien/node-ecs-app-pattern-v1"
+      app_pattern_version: "main"
+      app_pattern_adapter_dir: "_adapter"
+      app_instance_iac_dir: "terraform"
+      app_instance_app_dir: "src"
+      account_id_dev: ${{ vars.SILVER_ACC_ID }}
+      account_id_sit: ${{ vars.SILVER_ACC_ID }}
+      account_id_pre: ${{ vars.GOLD_ACC_ID }}
+      account_id_prd: ${{ vars.GOLD_ACC_ID }}
+      account_id_platinum: ${{ vars.PLATINUM_ACC_ID }}
+      account_id_aws_ecr: ${{ vars.SHARED_TOOLS_ACC_ID }}
+      tf_cloud_organization: "Nutrien-LATAM"
+      tf_version: "1.6.5"
+      aws_github_oidc_role: "GitHubOrganizationAccountAssumeRole"
+      aws_region: "sa-east-1"      
+    secrets:
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      TFE_TOKEN: ${{ secrets.TFE_TOKEN }}

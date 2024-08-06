@@ -1,0 +1,47 @@
+name: '➕ Add squad'
+run-name: Add squad ${{ inputs.squad }}
+
+on:  
+  workflow_dispatch:
+    inputs:
+      squad:
+        description: 'Squad a ser adicionada como colaboradora:'
+        required: true
+        type: choice
+        options:
+          - asgard
+          - braavos
+          - gandalf
+          - moneyfarm
+          - offerpricing
+          - seedrec
+          - valinor
+          - vegeta
+          - las
+
+jobs:
+  add-squad:
+    if: ${{ github.event.repository.name != 'node-ecs-template' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add Squad
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GH_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: 'LatamNutrien',
+              repo: 'node-ecs-app-pattern-v1',
+              workflow_id: 'app-instance-configure-squad.yml',
+              ref: 'app-instance-configure-squad/1.0',
+              inputs: {
+                'identifier': '${{ github.event.repository.name }}',
+                'squad': '${{ inputs.squad }}'
+              }
+            }).catch(error => error).then(response => {
+              core.debug(response);
+              if (response.status !== 204) {
+                core.setFailed(`Create workflow_dispatch received status code ${response.status}`);
+              }
+            });
+

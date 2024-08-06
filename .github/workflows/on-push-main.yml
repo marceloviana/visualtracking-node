@@ -1,0 +1,42 @@
+name: 'App Deploy'
+
+on:  
+  push:
+    branches:
+      - 'main'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    if: |
+      github.event.head_commit.message != 'Initial commit' &&
+      github.event.repository.name != 'node-ecs-template'
+    uses: LatamNutrien/node-ecs-app-pattern-v1/.github/workflows/app-instance-deploy.yml@app-instance-deploy/1.0
+    with:
+      identifier: "${{ github.event.repository.name }}"
+      app_pattern_repo: "LatamNutrien/node-ecs-app-pattern-v1"
+      app_pattern_version: "main"
+      app_pattern_adapter_dir: "_adapter"
+      app_instance_iac_dir: "terraform"
+      app_instance_app_dir: "src"
+      account_id_dev: ${{ vars.SILVER_ACC_ID }}
+      account_id_sit: ${{ vars.SILVER_ACC_ID }}
+      account_id_pre: ${{ vars.GOLD_ACC_ID }}
+      account_id_prd: ${{ vars.GOLD_ACC_ID }}
+      account_id_platinum: ${{ vars.PLATINUM_ACC_ID }}
+      account_id_aws_ecr: ${{ vars.SHARED_TOOLS_ACC_ID }}
+      tf_cloud_organization: "Nutrien-LATAM"
+      tf_version: "1.6.5"
+      aws_github_oidc_role: "GitHubOrganizationAccountAssumeRole"
+      aws_region: "sa-east-1"
+      ecr_tag_application_id: "2433" # Plataforma Nutrien
+      ecr_tag_department: "brazil"
+      dockerfile_path: "."
+      dockerfile_target_stage: "prod"
+    secrets:
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      TFE_TOKEN: ${{ secrets.TFE_TOKEN }}
+      PACKAGECLOUD_LOVEPAIGN_READ_TOKEN: ${{ secrets.PACKAGECLOUD_LOVEPAIGN_READ_TOKEN }}
