@@ -6,5 +6,5 @@ COPY src src
 
 RUN npm update && apt-get update && apt-get install -y curl
 
-EXPOSE 8080
+EXPOSE 9000
 CMD ["node", "src/index.js"]

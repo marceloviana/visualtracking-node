@@ -1,16 +1,27 @@
-const fs = require('fs');
 const express = require('express')
+const { createServer } = require('node:http')
 const app = express()
-const port = 80
+const serverApp = createServer(app)
+const { authAsSocket } = require('./services/')
+require('dotenv').config({ path: './.env' })
+var cors = require('cors')
+const io = require("socket.io")(serverApp, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+})
+app.use(cors())
 
-app.use(function(req, res, next) {
-	res.setHeader('version', fs.readFileSync('./src/version.txt', 'utf-8'));
-	next();
-	}
-)
+// Routers
+require('./router')(app)
+// websocket authentication
+io.use(authAsSocket)
+// websocket namespace
+const namespace = io.of('/br-websocket')
+// websocket orchestration
+require('./controller/').orchestration(namespace)
 
-app.get('/', (req, res) => res.send('<h1>Hello World!</h1>'))
-app.get('/health', (req, res) => res.send('<h1>I\'m fine!</h1>'))
-app.get('/changelog', (req, res) => res.sendFile('changelog.html', {root: __dirname}))
-
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+serverApp.listen(process.env.PORT, () => {
+  console.log(`server running at http://localhost:${process.env.PORT}`)
+})
