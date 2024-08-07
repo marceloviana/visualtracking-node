@@ -9,10 +9,10 @@ module "ecs-service" {
   ecr-aws-account-id = var.ecr-aws-account-id
   iac_source         = var.iac_source
 
-  serviceName                    = ""
-  ingressContextPath             = ""
-  healthPath                     = "/health"
-  add_secretsmanager_permissions = false
+  serviceName        = "br-websocket-service"
+  ingressContextPath = "/br-websocket-service*"
+  healthPath         = "/health-check"
+  add_secretsmanager_permissions = true
 }
 
 output "ecs_service_name" {
