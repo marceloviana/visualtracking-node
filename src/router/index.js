@@ -4,9 +4,18 @@ const { healthCheckValidations } = require('./health-check')
 module.exports = (app) => {
 
     /*
+        Hello everyone
+    */
+    app.get(['/', '/br-websocket'], (req, res) => {
+
+        res.json("Instant Messaging API by Socket Protocol. This application is sub-service from Notification-Center.")
+    
+    })
+  
+    /*
         Health-Check
     */
-    app.get('/br-websocket/health-check',async (req, res) => {
+    app.get(['/health-check', '/br-websocket/health-check'], async (req, res) => {
 
         let validations = await healthCheckValidations()
         if (validations.status) {
