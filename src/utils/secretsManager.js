@@ -15,7 +15,7 @@ module.exports.getSecret = async () => {
         );
     
         if (response.SecretString) {
-            process.env = response.SecretString
+            // process.env = response.SecretString
             resolve(response.SecretString);
         }
 

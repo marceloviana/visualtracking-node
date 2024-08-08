@@ -13,7 +13,7 @@ const authAsSocket = (socket, next) => {
 }
 
 const authAsMiddleware = (req, res, next) => {
-    console.log(req.headers.authorization)
+
     if (req.headers.authorization == process.env.TOKEN_AUTHENTICATION) {
         next()
         return

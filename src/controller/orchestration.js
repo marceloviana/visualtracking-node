@@ -1,5 +1,4 @@
 const { redis } = require('../model')
-
 const rooms = process.env.ROOMS.split(",")
 
 module.exports.orchestration = (io) => {
