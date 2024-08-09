@@ -5,6 +5,6 @@ COPY package.json .
 COPY src src
 
 RUN npm update && apt-get update && apt-get install -y curl
-
+ENV AWS_REGION="sa-east-1"
 EXPOSE 9000
 CMD ["node", "src/index.js"]
