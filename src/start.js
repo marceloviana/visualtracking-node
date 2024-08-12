@@ -4,11 +4,13 @@ const app = express()
 const serverApp = createServer(app)
 const { authAsSocket } = require('./services')
 var cors = require('cors')
+const path = require('node:path')
 const io = require("socket.io")(serverApp, {
   cors: {
     origin: "*",
     methods: ["GET", "POST"]
-  }
+  },
+  // path: "/br-websocket/socket.io"
 })
 app.use(cors())
 

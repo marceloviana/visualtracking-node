@@ -6,7 +6,7 @@ module.exports = (app) => {
     /*
         Hello everyone
     */
-    app.get(['/', '/socket.io'], (req, res) => {
+    app.get(['/', '/br-websocket'], (req, res) => {
 
         res.json("Instant Messaging API by Socket Protocol. This application is sub-service from Notification-Center.")
     
@@ -15,7 +15,7 @@ module.exports = (app) => {
     /*
         Health-Check
     */
-    app.get(['/health-check', '/socket.io/health-check'], async (req, res) => {
+    app.get(['/health-check', '/br-websocket/health-check'], async (req, res) => {
 
         let validations = await healthCheckValidations()
         if (validations.status) {
@@ -28,7 +28,7 @@ module.exports = (app) => {
     /*
         endpoint to delivery rooms before authenticate middleware.
     */
-    app.get('/socket.io/getAllRooms', authAsMiddleware, (req, res) => {
+    app.get('/br-websocket/getAllRooms', authAsMiddleware, (req, res) => {
     
         res.json(process.env.ROOMS.split(","))
     
