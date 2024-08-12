@@ -21,6 +21,6 @@ const namespace = io.of('/br-websocket')
 // websocket orchestration
 require('./controller').orchestration(namespace)
 
-serverApp.listen(process.env.PORT, () => {
-  console.log(`server running at http://localhost:${process.env.PORT}`)
+serverApp.listen(PORT = process.env.PORT || 80, () => {
+  console.log(`server running at http://localhost:${PORT}`)
 })

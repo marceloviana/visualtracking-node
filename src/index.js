@@ -1,4 +1,3 @@
-console.log(process.env)
 const { getSecret } = require('./utils/secretsManager')
 return new Promise(async (resolve) => {
     let waitSecret = setInterval(async() => {
