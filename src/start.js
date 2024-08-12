@@ -8,8 +8,7 @@ const io = require("socket.io")(serverApp, {
   cors: {
     origin: "*",
     methods: ["GET", "POST"]
-  },
-  path: '/socket.io/socket.io'
+  }
 })
 app.use(cors())
 
@@ -18,7 +17,7 @@ require('./router')(app)
 // websocket authentication
 io.use(authAsSocket)
 // websocket namespace
-const namespace = io.of('/socket.io')
+const namespace = io.of('/br-websocket')
 // websocket orchestration
 require('./controller').orchestration(namespace)
 
