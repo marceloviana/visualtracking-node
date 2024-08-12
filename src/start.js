@@ -8,7 +8,8 @@ const io = require("socket.io")(serverApp, {
   cors: {
     origin: "*",
     methods: ["GET", "POST"]
-  }
+  },
+  path: '/br-websocket/socket.io'
 })
 app.use(cors())
 
