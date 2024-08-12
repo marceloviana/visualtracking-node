@@ -10,7 +10,7 @@ module "ecs-service" {
   iac_source         = var.iac_source
 
   serviceName        = "br-websocket-service"
-  ingressContextPath = "/socket.io*"
+  ingressContextPath = "/br-websocket*"
   healthPath         = "/health-check"
   add_secretsmanager_permissions = true
 }
