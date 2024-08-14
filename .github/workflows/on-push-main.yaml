@@ -1,0 +1,337 @@
+on:
+  push:
+    branches:
+    - main
+    paths-ignore:
+    - '.github/**'
+
+name: br-websocket-service
+env:
+  REGION_ECR: us-east-2
+  REGION_ECS: sa-east-1
+  SERVICE_NAME: br-websocket-service
+  TAG: br-websocket-service
+  ECS_CLUSTER_PREFIX: br-digihub-ecs
+permissions:
+  id-token: write
+  contents: write
+jobs:
+  check-rerun:
+    name: Check rerun
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check rerun
+      uses: LatamNutrien/reusable-workflows/.github/actions/block-pipeline-rerun@block-pipeline-rerun/1.0
+      with:
+        repository: ${{ env.TAG }}
+        iam-role-to-assume: arn:aws:iam::${{ vars.SHARED_TOOLS_ACC_ID }}:role/GitHubOrganizationAccountAssumeRole
+        region: ${{ env.REGION_ECR }}
+        commit-hash: ${{ github.sha }}
+  build-auth:
+    name: Build & auth
+    runs-on: ubuntu-latest
+    needs: check-rerun
+    steps:
+    - name: Check rerun
+      uses: LatamNutrien/reusable-workflows/.github/actions/block-pipeline-rerun@block-pipeline-rerun/1.0
+      with:
+        repository: ${{ env.TAG }}
+        iam-role-to-assume: arn:aws:iam::${{ vars.SHARED_TOOLS_ACC_ID }}:role/GitHubOrganizationAccountAssumeRole
+        region: ${{ env.REGION_ECR }}
+        commit-hash: ${{ github.sha }}
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Build, tag, and push to AWS ECR
+      id: build
+      uses: LatamNutrien/reusable-workflows/.github/actions/build-and-push@build-and-push/1.0
+      with:
+        path: .
+        repository: ${{ env.TAG }}
+        build-arg: NPM_TOKEN=${{ secrets.PACKAGECLOUD_LOVEPAIGN_READ_TOKEN }}
+        iam-role-to-assume: arn:aws:iam::${{ vars.SHARED_TOOLS_ACC_ID }}:role/GitHubOrganizationAccountAssumeRole
+        region: ${{ env.REGION_ECR }}
+        docker-buildkit: '1'
+        target-stage: prod
+    - name: Slack notification on failure
+      if: ${{always() && steps.build.outcome != 'success'}}
+      uses: LatamNutrien/reusable-workflows/.github/actions/backend-build-slack-notification-failure@backend-build-slack-notification-failure/1.0
+      with:
+        github-actions-url: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        github-commit-url: https://github.com/${{ github.repository }}/commit/${{ github.sha }}
+        backend-package: ${{ env.TAG }}
+        backend-source: ${{ github.repository }}
+        slack-webhook: ${{ secrets.SLACK_WEBHOOK_BUILD_FAILURE }}
+    - name: Save shorter sha256
+      if: ${{ steps.build.outcome == 'success' }}
+      id: get-short-sha256
+      run: |-
+        SHORT_SHA256=$(echo ${SHA256:0:20})
+        echo "short-sha256=$SHORT_SHA256" >> "$GITHUB_OUTPUT"
+      env:
+        SHA256: ${{ steps.build.outputs.sha256 }}
+    outputs:
+      sha256: ${{ steps.build.outputs.sha256 }}
+      short-sha256: ${{ steps.get-short-sha256.outputs.short-sha256 }}
+      registry: ${{ steps.build.outputs.registry }}
+
+  deploy-ecs-dev:
+    needs:
+    - build-auth
+    name: ECS-dev-${{ needs.build-auth.outputs.short-sha256 }}
+    environment: dev
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy ECS
+      id: deploy-ecs
+      uses: LatamNutrien/reusable-workflows/.github/actions/deploy-ecs@deploy-ecs/1.0
+      with:
+        environment: ${{ vars.ENVIRONMENT }}
+        ecs-cluster: ${{ env.ECS_CLUSTER_PREFIX }}-${{ vars.ENVIRONMENT }}
+        service-name: ${{ env.SERVICE_NAME }}
+        registry: ${{ needs.build-auth.outputs.registry }}
+        repository: ${{ env.TAG }}
+        sha256: ${{ needs.build-auth.outputs.sha256 }}
+        iam-role-to-assume: arn:aws:iam::${{ vars.SILVER_ACC_ID }}:role/GitHubOrganizationAccountAssumeRole
+        region: ${{ env.REGION_ECS }}
+    - name: Checkout
+      if: always()
+      uses: actions/checkout@v3
+    - name: Get deployment info
+      if: always()
+      id: get-info
+      uses: LatamNutrien/reusable-workflows/.github/actions/ecs-get-deployment-info@ecs-get-deployment-info/1.0
+      with:
+        environment: ${{ vars.ENVIRONMENT }}
+        ecs-service-name: ${{ env.SERVICE_NAME }}
+        gh-token: ${{ secrets.GH_TOKEN }}
+    - name: Update Confluence page
+      id: confluence
+      if: ${{always() && steps.deploy-ecs.outcome == 'success'}}
+      uses: LatamNutrien/reusable-workflows/.github/actions/ecs-update-confluence-page@ecs-update-confluence-page/1.0
+      with:
+        environment: ${{ vars.ENVIRONMENT }}
+        backend-package: ${{ env.TAG }}
+        backend-source: ${{ github.repository }}
+        ecs-service-name: ${{ env.SERVICE_NAME }}
+        image-short-sha: ${{ needs.build-auth.outputs.short-sha256 }}
+        timestamp-br: ${{ steps.get-info.outputs.timestamp-br }}
+        github-actions-url: ${{ steps.get-info.outputs.github-actions-url }}
+        github-commit-url: ${{ steps.get-info.outputs.github-commit-url }}
+        confluence-url: ${{ vars.CONFLUENCE_URL }}
+        confluence-username: ${{ secrets.CONFLUENCE_USERNAME }}
+        confluence-token: ${{ secrets.CONFLUENCE_TOKEN }}
+        confluence-space: ${{ vars.CONFLUENCE_SPACE}}
+        confluence-parent-page-id: ${{ vars.CONFLUENCE_PARENT_PAGE_ID }}
+    - name: Slack notification on failure
+      if: ${{always() && steps.deploy-ecs.outcome != 'success'}}
+      uses: LatamNutrien/reusable-workflows/.github/actions/ecs-slack-notification-failure@ecs-slack-notification-failure/1.0
+      with:
+        environment: ${{ vars.ENVIRONMENT }}
+        backend-package: ${{ env.TAG }}
+        backend-source: ${{ github.repository }}
+        github-actions-url: ${{ steps.get-info.outputs.github-actions-url }}
+        timestamp-br: ${{ steps.get-info.outputs.timestamp-br }}
+        ecs-url: ${{ steps.get-info.outputs.ecs-url }}
+        confluence-url: ${{ vars.CONFLUENCE_URL }}
+        confluence-username: ${{ secrets.CONFLUENCE_USERNAME }}
+        confluence-token: ${{ secrets.CONFLUENCE_TOKEN }}
+        confluence-space: ${{ vars.CONFLUENCE_SPACE}}
+        slack-webhook: ${{ secrets.SLACK_WEBHOOK_ECS_FAILURE }}
+
+  deploy-ecs-sit:
+    needs:
+    - build-auth
+    - deploy-ecs-dev
+    name: ECS-sit-${{ needs.build-auth.outputs.short-sha256 }}
+    environment: sit
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy ECS
+      id: deploy-ecs
+      uses: LatamNutrien/reusable-workflows/.github/actions/deploy-ecs@deploy-ecs/1.0
+      with:
+        environment: ${{ vars.ENVIRONMENT }}
+        ecs-cluster: ${{ env.ECS_CLUSTER_PREFIX }}-${{ vars.ENVIRONMENT }}
+        service-name: ${{ env.SERVICE_NAME }}
+        registry: ${{ needs.build-auth.outputs.registry }}
+        repository: ${{ env.TAG }}
+        sha256: ${{ needs.build-auth.outputs.sha256 }}
+        iam-role-to-assume: arn:aws:iam::${{ vars.SILVER_ACC_ID }}:role/GitHubOrganizationAccountAssumeRole
+        region: ${{ env.REGION_ECS }}
+    - name: Checkout
+      if: always()
+      uses: actions/checkout@v3
+    - name: Get deployment info
+      if: always()
+      id: get-info
+      uses: LatamNutrien/reusable-workflows/.github/actions/ecs-get-deployment-info@ecs-get-deployment-info/1.0
+      with:
+        environment: ${{ vars.ENVIRONMENT }}
+        ecs-service-name: ${{ env.SERVICE_NAME }}
+        gh-token: ${{ secrets.GH_TOKEN }}
+    - name: Update Confluence page
+      id: confluence
+      if: ${{always() && steps.deploy-ecs.outcome == 'success'}}
+      uses: LatamNutrien/reusable-workflows/.github/actions/ecs-update-confluence-page@ecs-update-confluence-page/1.0
+      with:
+        environment: ${{ vars.ENVIRONMENT }}
+        backend-package: ${{ env.TAG }}
+        backend-source: ${{ github.repository }}
+        ecs-service-name: ${{ env.SERVICE_NAME }}
+        image-short-sha: ${{ needs.build-auth.outputs.short-sha256 }}
+        timestamp-br: ${{ steps.get-info.outputs.timestamp-br }}
+        github-actions-url: ${{ steps.get-info.outputs.github-actions-url }}
+        github-commit-url: ${{ steps.get-info.outputs.github-commit-url }}
+        confluence-url: ${{ vars.CONFLUENCE_URL }}
+        confluence-username: ${{ secrets.CONFLUENCE_USERNAME }}
+        confluence-token: ${{ secrets.CONFLUENCE_TOKEN }}
+        confluence-space: ${{ vars.CONFLUENCE_SPACE}}
+        confluence-parent-page-id: ${{ vars.CONFLUENCE_PARENT_PAGE_ID }}
+        gh-token: ${{ secrets.GH_TOKEN }}
+    - name: Slack notification on failure
+      if: ${{always() && steps.deploy-ecs.outcome != 'success'}}
+      uses: LatamNutrien/reusable-workflows/.github/actions/ecs-slack-notification-failure@ecs-slack-notification-failure/1.0
+      with:
+        environment: ${{ vars.ENVIRONMENT }}
+        backend-package: ${{ env.TAG }}
+        backend-source: ${{ github.repository }}
+        github-actions-url: ${{ steps.get-info.outputs.github-actions-url }}
+        timestamp-br: ${{ steps.get-info.outputs.timestamp-br }}
+        ecs-url: ${{ steps.get-info.outputs.ecs-url }}
+        confluence-url: ${{ vars.CONFLUENCE_URL }}
+        confluence-username: ${{ secrets.CONFLUENCE_USERNAME }}
+        confluence-token: ${{ secrets.CONFLUENCE_TOKEN }}
+        confluence-space: ${{ vars.CONFLUENCE_SPACE}}
+        slack-webhook: ${{ secrets.SLACK_WEBHOOK_ECS_FAILURE }}
+
+  deploy-ecs-pre:
+    needs:
+    - build-auth
+    - deploy-ecs-sit
+    name: ECS-pre-${{ needs.build-auth.outputs.short-sha256 }}
+    environment: pre
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy ECS
+      id: deploy-ecs
+      uses: LatamNutrien/reusable-workflows/.github/actions/deploy-ecs@deploy-ecs/1.0
+      with:
+        environment: ${{ vars.ENVIRONMENT }}
+        ecs-cluster: ${{ env.ECS_CLUSTER_PREFIX }}1-${{ vars.ENVIRONMENT }}
+        service-name: ${{ env.SERVICE_NAME }}
+        registry: ${{ needs.build-auth.outputs.registry }}
+        repository: ${{ env.TAG }}
+        sha256: ${{ needs.build-auth.outputs.sha256 }}
+        iam-role-to-assume: arn:aws:iam::${{vars.GOLD_ACC_ID}}:role/GitHubOrganizationAccountAssumeRole
+        region: ${{ env.REGION_ECS }}
+    - name: Checkout
+      if: always()
+      uses: actions/checkout@v3
+    - name: Get deployment info
+      if: always()
+      id: get-info
+      uses: LatamNutrien/reusable-workflows/.github/actions/ecs-get-deployment-info@ecs-get-deployment-info/1.0
+      with:
+        environment: ${{ vars.ENVIRONMENT }}
+        ecs-service-name: ${{ env.SERVICE_NAME }}
+        gh-token: ${{ secrets.GH_TOKEN }}
+    - name: Update Confluence page
+      id: confluence
+      if: ${{always() && steps.deploy-ecs.outcome == 'success'}}
+      uses: LatamNutrien/reusable-workflows/.github/actions/ecs-update-confluence-page@ecs-update-confluence-page/1.0
+      with:
+        environment: ${{ vars.ENVIRONMENT }}
+        backend-package: ${{ env.TAG }}
+        backend-source: ${{ github.repository }}
+        ecs-service-name: ${{ env.SERVICE_NAME }}
+        image-short-sha: ${{ needs.build-auth.outputs.short-sha256 }}
+        timestamp-br: ${{ steps.get-info.outputs.timestamp-br }}
+        github-actions-url: ${{ steps.get-info.outputs.github-actions-url }}
+        github-commit-url: ${{ steps.get-info.outputs.github-commit-url }}
+        confluence-url: ${{ vars.CONFLUENCE_URL }}
+        confluence-username: ${{ secrets.CONFLUENCE_USERNAME }}
+        confluence-token: ${{ secrets.CONFLUENCE_TOKEN }}
+        confluence-space: ${{ vars.CONFLUENCE_SPACE}}
+        confluence-parent-page-id: ${{ vars.CONFLUENCE_PARENT_PAGE_ID }}
+        gh-token: ${{ secrets.GH_TOKEN }}
+    - name: Slack notification on failure
+      if: ${{always() && steps.deploy-ecs.outcome != 'success'}}
+      uses: LatamNutrien/reusable-workflows/.github/actions/ecs-slack-notification-failure@ecs-slack-notification-failure/1.0
+      with:
+        environment: ${{ vars.ENVIRONMENT }}
+        backend-package: ${{ env.TAG }}
+        backend-source: ${{ github.repository }}
+        github-actions-url: ${{ steps.get-info.outputs.github-actions-url }}
+        timestamp-br: ${{ steps.get-info.outputs.timestamp-br }}
+        ecs-url: ${{ steps.get-info.outputs.ecs-url }}
+        confluence-url: ${{ vars.CONFLUENCE_URL }}
+        confluence-username: ${{ secrets.CONFLUENCE_USERNAME }}
+        confluence-token: ${{ secrets.CONFLUENCE_TOKEN }}
+        confluence-space: ${{ vars.CONFLUENCE_SPACE}}
+        slack-webhook: ${{ secrets.SLACK_WEBHOOK_ECS_FAILURE }}
+
+  deploy-ecs-prd:
+    needs:
+    - build-auth
+    - deploy-ecs-pre
+    name: ECS-prd-${{ needs.build-auth.outputs.short-sha256 }}
+    environment: prd
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy ECS
+      id: deploy-ecs
+      uses: LatamNutrien/reusable-workflows/.github/actions/deploy-ecs@deploy-ecs/1.0
+      with:
+        environment: ${{ vars.ENVIRONMENT }}
+        ecs-cluster: ${{ env.ECS_CLUSTER_PREFIX }}-prod
+        service-name: ${{ env.SERVICE_NAME }}
+        registry: ${{ needs.build-auth.outputs.registry }}
+        repository: ${{ env.TAG }}
+        sha256: ${{ needs.build-auth.outputs.sha256 }}
+        iam-role-to-assume: arn:aws:iam::${{vars.GOLD_ACC_ID}}:role/GitHubOrganizationAccountAssumeRole
+        region: ${{ env.REGION_ECS }}
+    - name: Checkout
+      if: always()
+      uses: actions/checkout@v3
+    - name: Get deployment info
+      if: always()
+      id: get-info
+      uses: LatamNutrien/reusable-workflows/.github/actions/ecs-get-deployment-info@ecs-get-deployment-info/1.0
+      with:
+        environment: ${{ vars.ENVIRONMENT }}
+        ecs-service-name: ${{ env.SERVICE_NAME }}
+        gh-token: ${{ secrets.GH_TOKEN }}
+    - name: Update Confluence page
+      id: confluence
+      if: ${{always() && steps.deploy-ecs.outcome == 'success'}}
+      uses: LatamNutrien/reusable-workflows/.github/actions/ecs-update-confluence-page@ecs-update-confluence-page/1.0
+      with:
+        environment: ${{ vars.ENVIRONMENT }}
+        backend-package: ${{ env.TAG }}
+        backend-source: ${{ github.repository }}
+        ecs-service-name: ${{ env.SERVICE_NAME }}
+        image-short-sha: ${{ needs.build-auth.outputs.short-sha256 }}
+        timestamp-br: ${{ steps.get-info.outputs.timestamp-br }}
+        github-actions-url: ${{ steps.get-info.outputs.github-actions-url }}
+        github-commit-url: ${{ steps.get-info.outputs.github-commit-url }}
+        confluence-url: ${{ vars.CONFLUENCE_URL }}
+        confluence-username: ${{ secrets.CONFLUENCE_USERNAME }}
+        confluence-token: ${{ secrets.CONFLUENCE_TOKEN }}
+        confluence-space: ${{ vars.CONFLUENCE_SPACE}}
+        confluence-parent-page-id: ${{ vars.CONFLUENCE_PARENT_PAGE_ID }}
+        gh-token: ${{ secrets.GH_TOKEN }}
+    - name: Slack notification on failure
+      if: ${{always() && steps.deploy-ecs.outcome != 'success'}}
+      uses: LatamNutrien/reusable-workflows/.github/actions/ecs-slack-notification-failure@ecs-slack-notification-failure/1.0
+      with:
+        environment: ${{ vars.ENVIRONMENT }}
+        backend-package: ${{ env.TAG }}
+        backend-source: ${{ github.repository }}
+        github-actions-url: ${{ steps.get-info.outputs.github-actions-url }}
+        timestamp-br: ${{ steps.get-info.outputs.timestamp-br }}
+        ecs-url: ${{ steps.get-info.outputs.ecs-url }}
+        confluence-url: ${{ vars.CONFLUENCE_URL }}
+        confluence-username: ${{ secrets.CONFLUENCE_USERNAME }}
+        confluence-token: ${{ secrets.CONFLUENCE_TOKEN }}
+        confluence-space: ${{ vars.CONFLUENCE_SPACE}}
+        slack-webhook: ${{ secrets.SLACK_WEBHOOK_ECS_FAILURE }}
