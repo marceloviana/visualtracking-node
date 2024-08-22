@@ -34,4 +34,13 @@ module.exports = (app) => {
     
     })
 
+    /*
+        endpoint to delivery the socket.io library.
+    */
+    app.get('/br-websocket/socketIoLib', (req, res) => {
+
+        res.download(`${__dirname}/lib/socket.io.js`)
+    
+    })    
+
 }

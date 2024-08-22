@@ -16,8 +16,7 @@ app.use(cors())
 
 // Routers
 require('./router')(app)
-// websocket authentication
-io.use(authAsSocket)
+
 // websocket namespace
 const namespace = io.of('/br-websocket')
 // websocket orchestration

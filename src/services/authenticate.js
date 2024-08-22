@@ -1,16 +1,4 @@
-const authAsSocket = (socket, next) => {
-
-    console.log(socket.handshake.headers.authorization)
-
-    if (socket.handshake.headers.authorization == process.env.TOKEN_AUTHENTICATION) {
-        next()
-        console.log(`New user connected: ${socket.id}`)
-        return
-    }
-
-    console.log(`Use ${socket.id} Unauthorized`)
-    next(new Error("Unauthorized"))
-}
+const { redis } = require('../model')
 
 const authAsMiddleware = (req, res, next) => {
 
@@ -21,7 +9,25 @@ const authAsMiddleware = (req, res, next) => {
    res.status(401).end()
 }
 
+const authAsSocketPostConnect = (socket) => {
+
+    token = socket.handshake.auth.token
+    email = `${socket.handshake.auth.email}_${socket.id}`
+
+    if (socket.handshake.auth.token === process.env.TOKEN_AUTHENTICATION) {
+        console.log(`New user connected: ${socket.id}`)
+        /* 
+          register in Redis
+        */
+        redis.set(email, socket.id)
+        return true
+    }
+
+    console.log(`User ${socket.id} Unauthorized`)
+    socket.disconnect()
+}
+
 module.exports = {
-    authAsSocket,
-    authAsMiddleware
+    authAsMiddleware,
+    authAsSocketPostConnect
 }

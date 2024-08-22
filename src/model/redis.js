@@ -1,11 +1,11 @@
-const { createClient } = require('redis');
+const { createClient } = require('redis')
 
 const globalStatusRedis = {
   status: true,
   message: null
 }
 
-const redis = createClient({
+const client = createClient({
   url: process.env.REDIS_ENDPOINT
 }).on('error', err => {
   console.log('Redis Client Error', err)
@@ -19,20 +19,24 @@ const redis = createClient({
 
 module.exports = {
 
-    get: (socketid) => {
-        redis.then((instance) => {
-          instance.get(`websocket_${socketid}`)
-        })        
+    getAllKeys: async (key) => (await client).sendCommand(['KEYS', `${key}*`]),
+    get: async (key) => (await client).get(key),
+    set: (key, value) => {
+      
+      if (!key || !value) {
+        return
+      }
+
+      client.then((instance) => {
+          instance.set(key, value)
+          instance.expire(key, process.env.REDIS_EXPIRE)
+          console.log('...')
+        })
+
     },
-    set: (socketid) => {
-        redis.then((instance) => {
-          instance.set(`websocket_${socketid}`, socketid)
-          instance.expire(`websocket_${socketid}`, process.env.REDIS_EXPIRE)
-        })        
-    },
-    delete: (socketid) => {
-        redis.then((instance) => {
-          instance.del(`websocket_${socketid}`)
+    delete: (key) => {
+      client.then((instance) => {
+          instance.del(key)
         })
     },
     status: () => globalStatusRedis
