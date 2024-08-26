@@ -2,7 +2,7 @@ const { redis } = require('../model')
 
 const authAsMiddleware = (req, res, next) => {
 
-    if (req.headers.authorization == process.env.TOKEN_AUTHENTICATION) {
+    if (req.headers.authorization === process.env.TOKEN_AUTHENTICATION) {
         next()
         return
     }

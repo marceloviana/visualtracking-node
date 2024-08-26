@@ -19,6 +19,7 @@ require('./router')(app)
 
 // websocket namespace
 const namespace = io.of('/br-websocket')
+
 // websocket orchestration
 require('./controller').orchestration(namespace)
 
