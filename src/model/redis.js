@@ -27,10 +27,10 @@ module.exports = {
         return
       }
 
-      client.then((instance) => {
+      client.then(async (instance) => {
           let setItem = instance.set(key, value)
           let expireItem = instance.expire(key, process.env.REDIS_EXPIRE)
-          console.log('...', setItem, expireItem)
+          console.log('...', await setItem, await expireItem)
         })
 
     },
