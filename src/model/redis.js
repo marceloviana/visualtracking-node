@@ -28,9 +28,9 @@ module.exports = {
       }
 
       client.then((instance) => {
-          instance.set(key, value)
-          instance.expire(key, process.env.REDIS_EXPIRE)
-          console.log('...')
+          let setItem = instance.set(key, value)
+          let expireItem = instance.expire(key, process.env.REDIS_EXPIRE)
+          console.log('...', setItem, expireItem)
         })
 
     },
