@@ -6,7 +6,10 @@ const globalStatusRedis = {
 }
 
 const client = createClient({
-  url: process.env.REDIS_ENDPOINT
+  url: process.env.REDIS_ENDPOINT,
+  socket: {
+    tls: true
+}
 }).on('error', err => {
   console.log('Redis Client Error', err)
   globalStatusRedis.status = false

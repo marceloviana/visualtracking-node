@@ -41,6 +41,15 @@ module.exports = (app) => {
 
         res.download(`${__dirname}/lib/socket.io.js`)
     
-    })    
+    })  
+    
+    /*
+        endpoint to delivery the socket.io library.
+    */
+    app.post('/br-websocket/check-connected-user', (req, res) => {
+
+        return true
+    
+    })
 
 }
