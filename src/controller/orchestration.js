@@ -23,6 +23,7 @@ module.exports.orchestration = (io) => {
               io.emit(data['room'], data['message'])
             } else {
               // Retrieve all connections for user (browser tabs)
+              console.log("Before Redis:", data['email'])
               let socketIdInRedis = await redis.getAllKeys(data['email'])
               console.log("Searching for user in Redis:", socketIdInRedis)
               for (let socket_name of socketIdInRedis) {
