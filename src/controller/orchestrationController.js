@@ -24,13 +24,15 @@ module.exports.orchestrationController = (io) => {
             } else {
               // Retrieve all connections for user (browser tabs)
               console.warn("Before Redis:", data['email'])
-              let socketIdInRedis = await redis.getAllKeys(data['email'])
-              console.warn("Searching for user in Redis:", socketIdInRedis)
-              for (let socket_name of socketIdInRedis) {
+              let userProfile = await redis.getAllKeys(data['email'])
+              console.warn("Searching for user in Redis:", userProfile)
+              for (let socket_name of userProfile) {
                 // Retrieve socket.id by key name in redis
-                let socket_id = await redis.get(socket_name)
-                console.warn("Sending message to : ", socket_id, '<--->', socket_name)
-                io.to(socket_id).emit(data['room'], data['message'])
+                let userProfile = JSON.parse(await redis.get(socket_name))
+                console.warn("Sending message to : ", userProfile.socketId, '<--->', userProfile.email, '<--->', userProfile.userRoom)
+                // If the sender does not inform the Room, then the Websocket will send to all user sockets registered in Redis.
+                let userRoom = data['room'] === 'ALL_USER_ROOM' ? userProfile.userRoom : data['room']
+                io.to(userProfile.socketId).emit(userRoom, data['message'])
               }
             }
     

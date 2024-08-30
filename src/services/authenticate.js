@@ -11,15 +11,19 @@ const authAsMiddleware = (req, res, next) => {
 
 const authAsSocketPostConnect = (socket) => {
 
-    token = socket.handshake.auth.token
-    email = `${socket.handshake.auth.email}_${socket.id}`
+    keyName = `${socket.handshake.auth.email}_${socket.id}`
 
     if (socket.handshake.auth.token === process.env.TOKEN_AUTHENTICATION) {
         console.log(`New user connected: ${socket.id}`)
         /* 
           register in Redis
         */
-        redis.set(email, socket.id)
+       console.log(socket.handshake.auth)
+        redis.set(keyName, JSON.stringify({
+            socketId: socket.id,
+            userRoom: socket.handshake.auth.userRoom,
+            email: socket.handshake.auth.email
+        }))
         return true
     }
 

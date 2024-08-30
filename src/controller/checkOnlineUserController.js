@@ -2,18 +2,20 @@ const { redis } = require('../model')
 
 module.exports.checkOnlineUserController = async (req) => {
     let email = req.params.email
-    let socket_names = undefined
-    if (email) {
-        socket_names = await redis.getAllKeys(email)
-    } else {
-        socket_names = await redis.getAllKeys("nutrien.com")
-    }
-    let emails = socket_names.map(name => name.replace(/.nutrien.com.*/g, "@nutrien.com"))
+    let userProfile = undefined
     let response = []
-    for (email of emails) {
-        if (!response.includes(email)) {
-            response.push(email)
-        }
+
+    if (email) {
+        userProfile = await redis.getAllKeys(email)
+    } else {
+        userProfile = await redis.getAllKeys("@")
     }
+
+    for (let socket_name of userProfile) {
+        // Retrieve socket.id by key name in redis
+        let userProfile = JSON.parse(await redis.get(socket_name))
+        response.push(userProfile)
+    }
+
     return response
 }
