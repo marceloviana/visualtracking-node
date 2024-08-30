@@ -1,5 +1,7 @@
 const { authAsMiddleware } = require('../services/')
 const { healthCheckValidations } = require('./health-check')
+const { redis } = require('../model/')
+const { checkOnlineUserController } = require('../controller/')
 
 module.exports = (app) => {
 
@@ -26,7 +28,7 @@ module.exports = (app) => {
     })
     
     /*
-        endpoint to delivery rooms before authenticate middleware.
+        endpoint for delivery rooms before authenticate middleware.
     */
     app.get('/br-websocket/getAllRooms', authAsMiddleware, (req, res) => {
     
@@ -35,7 +37,7 @@ module.exports = (app) => {
     })
 
     /*
-        endpoint to delivery the socket.io library.
+        endpoint for delivery the socket.io library.
     */
     app.get('/br-websocket/socketIoLib', (req, res) => {
 
@@ -44,11 +46,12 @@ module.exports = (app) => {
     })  
     
     /*
-        endpoint to delivery the socket.io library.
+        endpoint for delivery connected user.
     */
-    app.post('/br-websocket/check-connected-user', (req, res) => {
+    app.get(['/br-websocket/check-online-user/', '/br-websocket/check-online-user/:email'], async (req, res) => {
 
-        return true
+        let response = await checkOnlineUserController(req)
+        return res.status(200).json(response)
     
     })
 

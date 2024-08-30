@@ -1,5 +1,7 @@
-const { orchestration } = require('./orchestration')
+const { orchestrationController } = require('./orchestrationController')
+const { checkOnlineUserController } = require('./checkOnlineUserController')
 
 module.exports = {
-    orchestration
+    orchestrationController,
+    checkOnlineUserController
 }

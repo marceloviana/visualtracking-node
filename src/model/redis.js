@@ -8,8 +8,8 @@ const globalStatusRedis = {
 const client = createClient({
   url: process.env.REDIS_ENDPOINT,
   socket: {
-    tls: true
-}
+    tls: process.env.REDIS_ENDPOINT.includes("localhost") ? false : true
+  }
 }).on('error', err => {
   console.log('Redis Client Error', err)
   globalStatusRedis.status = false
@@ -22,7 +22,7 @@ const client = createClient({
 
 module.exports = {
 
-    getAllKeys: async (key) => (await client).sendCommand(['KEYS', `${key}*`]),
+    getAllKeys: async (key) => (await client).sendCommand(['KEYS', `*${key}*`]),
     get: async (key) => (await client).get(key),
     set: (key, value) => {
       

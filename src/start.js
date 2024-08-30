@@ -9,8 +9,7 @@ const io = require("socket.io")(serverApp, {
   cors: {
     origin: "*",
     methods: ["GET", "POST"]
-  },
-  // path: "/br-websocket/socket.io"
+  }
 })
 app.use(cors())
 
@@ -21,7 +20,7 @@ require('./router')(app)
 const namespace = io.of('/br-websocket')
 
 // websocket orchestration
-require('./controller').orchestration(namespace)
+require('./controller').orchestrationController(namespace)
 
 serverApp.listen(PORT = process.env.PORT || 80, () => {
   console.log(`server running at http://localhost:${PORT}`)
