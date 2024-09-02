@@ -1,5 +1,5 @@
 <center>
-<H1> IaC Terraform for POC-WEBSOCKET with Nodejs application distribution in cluster ECS </H1>
+<H1> BR-WEBSOCKET-SERVICE </H1>
 </center>
 
 ![See here archtecture diagram](./diagram/websocket-Flow.drawio.svg)
