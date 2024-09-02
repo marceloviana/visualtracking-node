@@ -4,7 +4,7 @@
 
 ![See here archtecture diagram](./diagram/websocket-Flow.drawio.svg)
 
-### Descrition
+### Description
 Instant Messaging API by Socket Protocol. This application is sub-service from Notification-Center.
 
 ### Documentation here:
