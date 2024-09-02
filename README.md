@@ -11,4 +11,4 @@ Instant Messaging API by Socket Protocol. This application is sub-service from N
 https://agrium.atlassian.net/wiki/spaces/DB/pages/3518857218/BR-WEBSOCKET-SERVICE
 
 
-#### Architect and developer: [Marcelo Viana](https://www.linkedin.com/in/marcelovianaalmeida/)
+#### Architect and developer: [Marcelo Almeida](https://www.linkedin.com/in/marcelovianaalmeida/)
