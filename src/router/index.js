@@ -1,7 +1,8 @@
-const { authAsMiddleware } = require('../services/')
 const { healthCheckValidations } = require('./health-check')
-const { redis } = require('../model/')
 const { checkOnlineUserController } = require('../controller/')
+// const { auth, requiredScopes } = require('express-oauth2-jwt-bearer');
+const { jwtCheck, preJwtCheck } = require('../utils/checkToken')
+
 
 module.exports = (app) => {
 
@@ -30,10 +31,11 @@ module.exports = (app) => {
     /*
         endpoint for delivery rooms before authenticate middleware.
     */
-    app.get('/br-websocket/getAllRooms', authAsMiddleware, (req, res) => {
+    app.get('/br-websocket/getAllRooms', preJwtCheck, jwtCheck, (req, res) => {
     
-        res.json(process.env.ROOMS.split(","))
-    
+        let envList = process.env.ROOMS.split(",")
+        let rooms = envList.filter(item => item != 'ALL_USER_ROOM')
+        return res.json(rooms)
     })
 
     /*
@@ -54,5 +56,14 @@ module.exports = (app) => {
         return res.status(200).json(response)
     
     })
+
+    /*
+        JWT validate
+    */
+        app.get('/br-websocket/token-validate/', preJwtCheck, jwtCheck, (req, res) => {
+
+            return res.status(200).json("Authorized!")
+        
+        })    
 
 }

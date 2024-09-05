@@ -1,6 +1,5 @@
-const { authAsSocket, authAsMiddleware } = require('./authenticate')
+const { authAsSocket } = require('./authenticate')
 
 module.exports = {
-    authAsSocket,
-    authAsMiddleware
+    authAsSocket
 }
