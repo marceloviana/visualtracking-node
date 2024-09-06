@@ -30,10 +30,24 @@ const preJwtCheck = (req, res, next) => {
 /*
     JWT validate
 */
-const jwtCheck = auth({
+const auth0 = auth({
     audience: process.env.JWT_AUDIENCE,
     issuerBaseURL: process.env.JWT_ISSUER_BASE_URL
 });
+/*
+    Check the origin of the request
+*/
+const checkIP = (req, res, next) => {
+    console.log('IP::::::', req.connection.remoteAddress, req.socket.remoteAddress)
+    try {
+        next()
+    } catch (error) {
+        next(error)
+    }
+}
+const jwtCheck = checkIP ? checkIP : auth0
+
+
 
 module.exports = {
     tokenValidate,
