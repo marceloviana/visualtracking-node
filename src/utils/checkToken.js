@@ -34,20 +34,23 @@ const auth0 = auth({
     audience: process.env.JWT_AUDIENCE,
     issuerBaseURL: process.env.JWT_ISSUER_BASE_URL
 });
+
 /*
-    Check the origin of the request
+    Checks the origin of the request and determines whether to allow it to proceed without authentication.
+    Backend applications only.
 */
-const checkIP = (req, res, next) => {
-    console.log('IP::::::', req.connection.remoteAddress, req.socket.remoteAddress)
-    try {
+const jwtCheck = (req, res, next) => {
+    const remoteIP = (req.connection.remoteAddress || req.socket.remoteAddress).slice(7, 11)
+    // Range IP in cloud AWS
+    const skipAuthentication = ["10.", "172.", "100."]
+    console.log("remoteIP::::", remoteIP)
+
+    if (skipAuthentication.includes(remoteIP)) {
         next()
-    } catch (error) {
-        next(error)
+    } else {
+        auth0(req, res, next)
     }
 }
-const jwtCheck = checkIP ? checkIP : auth0
-
-
 
 module.exports = {
     tokenValidate,
