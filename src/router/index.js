@@ -11,7 +11,7 @@ module.exports = (app) => {
     */
     app.get(['/', '/br-websocket'], (req, res) => {
 
-        res.json("Instant Messaging API by Socket Protocol. This application is sub-service from Notification-Center.")
+        res.json("Instant Messaging API by Socket Protocol.")
     
     })
   

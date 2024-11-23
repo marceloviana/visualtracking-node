@@ -5,6 +5,7 @@ services:
     restart: always
     ports:
       - '6379:6379'
+    hostname: redisserver
   websocket:
     image: "node:20"
     restart: always
@@ -19,5 +20,6 @@ services:
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_REGION=${AWS_REGION}
       - ENVIRONMENT=dev
+    hostname: websocket
     depends_on:
       - redis

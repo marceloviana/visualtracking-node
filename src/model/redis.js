@@ -6,14 +6,14 @@ const globalStatusRedis = {
 }
 
 const client = createClient({
-  url: process.env.REDIS_ENDPOINT,
+  url: `redis://${process.env.REDIS_ENDPOINT}`,
   socket: {
-    tls: process.env.REDIS_ENDPOINT.includes("localhost") ? false : true
+    tls: process.env.REDIS_ENDPOINT.includes("localhost") || process.env.REDIS_ENDPOINT.includes("redisserver") ? false : true
   }
 }).on('error', err => {
-  console.log('Redis Client Error', err)
+  console.log(`Redis Client Error ${process.env.REDIS_ENDPOINT}`, err)
   globalStatusRedis.status = false
-  globalStatusRedis.message = `Redis Client Error`
+  globalStatusRedis.message = `Redis Client Error in ${process.env.REDIS_ENDPOINT}`
 }).connect();
 
 /*

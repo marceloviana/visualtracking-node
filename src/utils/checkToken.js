@@ -42,7 +42,7 @@ const auth0 = auth({
 const jwtCheck = (req, res, next) => {
     const remoteIP = (req.connection.remoteAddress || req.socket.remoteAddress).slice(7, 11)
     // Range IP in cloud AWS
-    const skipAuthentication = ["127.", "10.", "172.", "100."]
+    const skipAuthentication = ["127.", "10.", "172.", "192."]
     console.log("remoteIP::::", remoteIP)
 
     if (skipAuthentication.includes(remoteIP)) {

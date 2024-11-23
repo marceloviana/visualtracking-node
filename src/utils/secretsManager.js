@@ -3,7 +3,7 @@ const {
     SecretsManagerClient,
   } = require("@aws-sdk/client-secrets-manager");
 
-const secretName = `/1/service/br-websocket-service/${process.env.ENVIRONMENT}/DEFAULT`
+const secretName = `${process.env.ENVIRONMENT}/websocket-service`
   
 module.exports.getSecret = async () => {
     return await new Promise( async (resolve) => {
