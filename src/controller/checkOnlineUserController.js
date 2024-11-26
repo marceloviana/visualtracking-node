@@ -5,17 +5,22 @@ module.exports.checkOnlineUserController = async (req) => {
     let userProfile = undefined
     let response = []
 
-    if (email) {
-        userProfile = await redis.getAllKeys(email)
-    } else {
-        userProfile = await redis.getAllKeys("@")
-    }
+    return new Promise(async (resolve) => {
+        setTimeout(async() => {
 
-    for (let socket_name of userProfile) {
-        // Retrieve socket.id by key name in redis
-        let userProfile = JSON.parse(await redis.get(socket_name))
-        response.push(userProfile)
-    }
+            if (email) {
+                userProfile = await redis.getAllKeys(email)
+            } else {
+                userProfile = await redis.getAllKeys("@")
+            }
+            for (let socket_name of userProfile) {
+                // Retrieve socket.id by key name in redis
+                let userProfile = JSON.parse(await redis.get(socket_name))
+                response.push(userProfile)
+            }
+    
+            resolve(response)
+        }, 1000)
 
-    return response
+    })
 }
