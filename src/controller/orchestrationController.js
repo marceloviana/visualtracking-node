@@ -17,7 +17,7 @@ module.exports.orchestrationController = (io) => {
         
           socket.on(i, async (data) => {
 
-            console.warn(data)
+            // console.warn(data)
             
             if ( data['broadcast'] ) {
               io.emit(data['room'], data['message'])
