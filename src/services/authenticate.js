@@ -7,7 +7,6 @@ const { tokenValidate } = require('../utils/checkToken')
 const authAsSocketPostConnect = async(socket) => {
 
     keyName = `${socket.handshake.auth.email}_${socket.id}`
-    // console.log("::::::::::::::", socket.handshake.auth)
     if (await tokenValidate(socket.handshake.auth.token) === 200) {
 
         console.log(`New user connected: ${socket.id}`)
