@@ -2,8 +2,9 @@ const { redis } = require('../model')
 const rooms = process.env.ROOMS.split(",")
 const { authAsSocketPostConnect } = require('../services/authenticate')
 const sendMessageinSocket = async (io, data) => {
-  let payload = JSON.stringify({type: 'message', data: data['message']})
 
+  let payload = JSON.stringify({type: 'message', data: data['message'], email: data.email, sender: data.sender})
+  
   if ( data['broadcast'] ) {
     io.emit(data['room'], payload)
   } else {
@@ -14,11 +15,15 @@ const sendMessageinSocket = async (io, data) => {
     for (let socket_name of userProfile) {
       // Retrieve socket.id by key name in redis
       let userProfile = JSON.parse(await redis.get(socket_name))
-      console.warn("Sending message to : ", userProfile.socketId, '<--->', userProfile.email, '<--->', userProfile.userRoom)
+      // console.warn("Sending message to : ", userProfile.socketId, '<--->', userProfile.email, '<--->', userProfile.userRoom)
       // If the sender does not inform the Room, then the Websocket will send to all user sockets registered in Redis.
       let userRoom = data['room'] === 'ALL_USER_ROOM' ? userProfile.userRoom : data['room']
       io.to(userProfile.socketId).emit(userRoom, payload)
     }
+    // send back to sender
+    let userProfileSender = JSON.parse(await redis.get(data.sender))
+    console.log(userProfileSender.socketId)
+    io.to(userProfileSender.socketId).emit(data['room'], payload)
   }
 }
 
@@ -26,7 +31,7 @@ const updateAllUsersConnected =  (io) => {
   setTimeout(async()=> {
     let userProfile = await redis.getAllKeys('@')
     let payload = JSON.stringify({type: 'usersConnected', data: userProfile})
-    console.log('Updating users...', payload)
+    // console.log('Updating users...', payload)
     io.emit("GERAL", payload)
     // socket.emit("GERAL", payload)
   }, 1000)
@@ -61,11 +66,11 @@ module.exports.orchestrationController = (io) => {
       */
       socket.on("disconnect", async (reason) => {
         
-        console.warn("Disconnecting socket.id:", socket.id)
+        // console.warn("Disconnecting socket.id:", socket.id)
         let socketIdInRedis = await redis.getAllKeys(socket.id)
-        console.warn("Searching for socket.id in Redis:", socketIdInRedis)
+        // console.warn("Searching for socket.id in Redis:", socketIdInRedis)
         for (let socket_name of socketIdInRedis) {
-          console.warn("Removing socket_name: ", socket_name)
+          console.warn("Removing socket_name from Redis: ", socket_name)
           redis.delete(socket_name)
         } 
       });  
