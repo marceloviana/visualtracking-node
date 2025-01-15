@@ -1,10 +1,10 @@
 <center>
-<H1> BR-WEBSOCKET-SERVICE </H1>
+<H1> WEBSOCKET-SERVICE </H1>
 </center>
 
 ![See here archtecture diagram](./diagram/websocket-Flow.drawio.svg)
 
-# BR-WEBSOCKET-SERVICE
+## Descrição
 
 API de mensagens instantâneas via protocolo Socket.
 
@@ -30,7 +30,7 @@ ROOMS=ARCHITECTURE,DEVOPS,DEVELOPMENT,GERAL
 
 ### Disponibilização das Salas e Ciência das Mesmas
 
-As aplicações que se conectam ao **br-websocket-service** precisam estar cientes das salas existentes. As salas são disponibilizadas por meio do seguinte endpoint:
+As aplicações que se conectam ao **websocket-service** precisam estar cientes das salas existentes. As salas são disponibilizadas por meio do seguinte endpoint:
 
 #### Get Rooms
 
