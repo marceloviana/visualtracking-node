@@ -1,0 +1,36 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: 
+      - "develop"
+  pull_request:
+    branches:
+      - "main"
+  workflow_dispatch:
+    push:
+      branches:
+        - 'releases/v*'
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag marceoviana/websocket:latest
+    
+    - name: Login in Hub-docker
+      uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
+      with:
+        username: ${{ secrets.HUBDOCKER.username }}  
+        password: ${{ secrets.HUBDOCKER.password }}  
+    - name: Push docker image
+      run: docker push marceoviana/websocket:latest
+
+    - name: Resume vars
+      run: echo ${{ secrets }}  

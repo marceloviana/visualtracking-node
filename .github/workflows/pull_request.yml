@@ -1,0 +1,20 @@
+name: GitHub Actions Demo
+
+on: [pull_request]
+
+jobs:
+    install:
+        name: Install packeges
+        runs-on: ubuntu-latest
+        steps:
+          - name: checkout
+            uses: actions/checkout@v3
+          - name: Cache node_modules
+            uses: actions/cache@v2
+            with:
+                path: node_modules
+                key: ${{ runner.os }}-${{ '**/npm.lock' }}
+          - name: Installer dependences
+            run: npm install
+
+
