@@ -17,7 +17,7 @@ jobs:
     steps:
     - name: secrets......
       env:
-        TOKEN: ${{ secrets.PASSWORD }}
+        TOKEN: ${{ secrets.USERNAME_REGISTRY }}
       run: |
         echo "Downloaded credentials: $TOKEN"
     - name: Checkout repository
