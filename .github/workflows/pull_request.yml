@@ -1,13 +1,9 @@
-name: GitHub Actions Demo
+name: Deploy with Ansible
 
 on:
     pull_request:
         branches:
         - "main"
-
-defaults:
-    run:
-        working-directory: /app
 jobs:
     install:
         name: Install packeges
@@ -23,14 +19,14 @@ jobs:
 
           - name: Deploy SSH Key
             run: |
-                cat <<EOF > /app/id_rsa
+                cat <<EOF > /root/id_rsa
                 ${{secrets.DEPLOY_KEY}}
                 EOF
                 pwd
                 ls -ls
 
           - name: Deploy with Ansible
-            run: bash ./.ansible/configure-ansible.sh app.infsite.org pi /app/id_rsa yes
+            run: bash ./.ansible/configure-ansible.sh app.infsite.org pi /root/id_rsa yes
           
 
 
