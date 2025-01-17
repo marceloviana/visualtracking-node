@@ -11,11 +11,11 @@ jobs:
         steps:
           - name: checkout
             uses: actions/checkout@v3
-          # - name: Install Ansible
-          #   run: | 
-          #       apt update && apt install -y pipx
-          #       pipx install --include-deps ansible
-          #       pipx install ansible-core
+          - name: Install Ansible
+            run: | 
+                apt update && apt install -y pipx
+                pipx install --include-deps ansible
+                pipx install ansible-core
 
           - name: Deploy SSH Key
             run: |
@@ -23,13 +23,8 @@ jobs:
                 ${{secrets.DEPLOY_KEY}}
                 EOF
                 chmod 700 ~/id_rsa
-                pwd
-                ls -ls
-                ssh -V
-                ssh -o StrictHostKeychecking=no -o ConnectTimeout=5 -i ~/id_rsa root@app.infsite.org -p 9022 "echo `date`"
 
           - name: Deploy with Ansible
             run: bash ./.ansible/configure-ansible.sh app.infsite.org root ~/id_rsa yes 9022
-          
 
 
