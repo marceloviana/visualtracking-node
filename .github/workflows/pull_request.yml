@@ -22,6 +22,7 @@ jobs:
                 cat <<EOF > ~/id_rsa
                 ${{secrets.DEPLOY_KEY}}
                 EOF
+                chmod 700 ~/id_rsa
                 pwd
                 ls -ls
                 ssh -V
