@@ -8,6 +8,9 @@ run_ansible_for_ec2_instance="$4"
 SERVER_PORT="$5"
 timeout=3
 
+# go to root dir
+cd ~
+
 if [ "$run_ansible_for_ec2_instance" == "no"];then
     echo "Execute o Ansible manualmente."
     exit 0
@@ -32,8 +35,9 @@ do
 
 done
 
-echo "Configurando Ansible /etc/ansible/hosts"
-cat <<EOF > /etc/ansible/hosts
+mkdir -p ./etc/ansible/ > /dev/null 2>&1
+echo "Configurando Ansible ./etc/ansible/hosts"
+cat <<EOF > ./etc/ansible/hosts
 [aws_devops]
 $PUBLIC_IP:$SERVER_PORT ansible_ssh_private_key_file=$PRIVATE_KEY_PATH ansible_user=$USER
 
@@ -41,7 +45,8 @@ $PUBLIC_IP:$SERVER_PORT ansible_ssh_private_key_file=$PRIVATE_KEY_PATH ansible_u
 ansible_python_interpreter=/usr/bin/python3
 EOF
 
-ls -ls
-ls -ls ../
+ls -lsa
+echo .................................
+ls -lsa ../
 echo "Implantando configurações em $PUBLIC_IP:$SERVER_PORT com Ansible..."
-cd .ansible && /root/.local/bin/ansible-playbook -i /etc/ansible/hosts playbook.yml
+cd ./.ansible && /root/.local/bin/ansible-playbook -i ./etc/ansible/hosts playbook.yml
