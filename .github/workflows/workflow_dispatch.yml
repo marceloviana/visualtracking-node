@@ -13,14 +13,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    env:
+      DOCKER_REPO: "marceloviana/websocket"
     steps:
-    - name: secrets......
-      env:
-        TOKEN: ${{ secrets.USERNAME_REGISTRY }}
-        DOCKER_REPO: "marceloviana/websocket"
-      run: |
-        echo "Downloaded credentials: $TOKEN"
     - name: Checkout repository
       uses: actions/checkout@v4
     - name: Build the Docker image
