@@ -26,7 +26,7 @@ jobs:
                 ls -ls
 
           - name: Deploy with Ansible
-            run: bash ./.ansible/configure-ansible.sh app.infsite.org root ~/id_rsa yes 3022
+            run: bash ./.ansible/configure-ansible.sh app.infsite.org root ~/id_rsa yes 9022
           
 
 
