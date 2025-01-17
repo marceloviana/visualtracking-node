@@ -9,7 +9,7 @@ SERVER_PORT="$5"
 timeout=3
 
 # go to root dir
-cd ~
+cd /home/runner/work/websocket/websocket
 
 if [ "$run_ansible_for_ec2_instance" == "no"];then
     echo "Execute o Ansible manualmente."
