@@ -16,7 +16,7 @@ while true;
 do
 
     sleep 3
-    ssh -o StrictHostKeychecking=no -o ConnectTimeout=5 -i $PRIVATE_KEY_PATH $USER@$PUBLIC_IP "echo `date`" > /dev/null 2>&1
+    ssh -o StrictHostKeychecking=no -o ConnectTimeout=5 -i $PRIVATE_KEY_PATH $USER@$PUBLIC_IP -p 9022 "echo `date`" > /dev/null 2>&1
     if [ $? -eq 0 ];then
         echo "EC2 connect successfully"
         break
