@@ -13,8 +13,6 @@ if [ "$run_ansible_for_ec2_instance" == "no"];then
     exit 0
 fi
 
-ssh -V
-
 while true;
 do
 
@@ -43,6 +41,7 @@ $PUBLIC_IP:$SERVER_PORT ansible_ssh_private_key_file=$PRIVATE_KEY_PATH ansible_u
 ansible_python_interpreter=/usr/bin/python3
 EOF
 
-echo `pwd`
+ls -ls
+ls -ls ../
 echo "Implantando configurações em $PUBLIC_IP:$SERVER_PORT com Ansible..."
-cd ./ansible && /root/.local/bin/ansible-playbook -i /etc/ansible/hosts playbook.yml
+cd .ansible && /root/.local/bin/ansible-playbook -i /etc/ansible/hosts playbook.yml
