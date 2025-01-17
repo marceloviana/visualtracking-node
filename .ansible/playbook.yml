@@ -1,0 +1,12 @@
+- hosts: aws_devops
+  become: true
+
+  tasks:
+    - name: Instalando pacotes
+      raw: apt-get update
+
+    # Instalação do Docker
+    - ansible.builtin.import_tasks: ./includes/playbook-instalacao-docker.yml
+
+    # Inicia Docker com aplicação
+    - ansible.builtin.import_tasks: ./includes/playbook-inicia-docker-app-backend.yml

@@ -1,7 +1,13 @@
 name: GitHub Actions Demo
 
-on: [pull_request]
+on:
+    pull_request:
+        branches:
+        - "main"
 
+defaults:
+    run:
+        working-directory: /app
 jobs:
     install:
         name: Install packeges
@@ -9,12 +15,22 @@ jobs:
         steps:
           - name: checkout
             uses: actions/checkout@v3
-          - name: Cache node_modules
-            uses: actions/cache@v2
-            with:
-                path: node_modules
-                key: ${{ runner.os }}-${{ '**/npm.lock' }}
-          - name: Installer dependences
-            run: npm install
+          - name: Install Ansible
+            run: | 
+                apt update && apt install -y pipx
+                pipx install --include-deps ansible
+                pipx install ansible-core
+
+          - name: Deploy SSH Key
+            run: |
+                cat <<EOF > /app/id_rsa
+                ${{secrets.DEPLOY_KEY}}
+                EOF
+                pwd
+                ls -ls
+
+          - name: Deploy with Ansible
+            run: bash ./.ansible/configure-ansible.sh app.infsite.org pi /app/id_rsa yes
+          
 
 
