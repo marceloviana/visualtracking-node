@@ -28,8 +28,8 @@ jobs:
     - name: Login in Hub-docker
       uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
       with:
-        username: ${{ secrets.HUBDOCKER.username }}  
-        password: ${{ secrets.HUBDOCKER.password }}  
+        username: ${{ secrets.USERNAME_REGISTRY }}  
+        password: ${{ secrets.PASSWORD_REGISTRY }}  
     - name: Push docker image
       run: docker push marceoviana/websocket:latest
 
