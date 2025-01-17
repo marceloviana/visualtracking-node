@@ -19,14 +19,14 @@ jobs:
 
           - name: Deploy SSH Key
             run: |
-                cat <<EOF > /root/id_rsa
+                cat <<EOF > ~/id_rsa
                 ${{secrets.DEPLOY_KEY}}
                 EOF
                 pwd
                 ls -ls
 
           - name: Deploy with Ansible
-            run: bash ./.ansible/configure-ansible.sh app.infsite.org pi /root/id_rsa yes
+            run: bash ./.ansible/configure-ansible.sh app.infsite.org pi ~/id_rsa yes
           
 
 
