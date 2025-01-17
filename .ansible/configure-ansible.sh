@@ -22,7 +22,7 @@ do
         echo "EC2 connect successfully"
         break
     fi
-    echo "Aguardando resposta de $PUBLIC_IP..."
+    echo "Aguardando resposta de $PUBLIC_IP:$SERVER_PORT..."
  
     ((timeout--))
     if [ $timeout -eq 0 ];then
