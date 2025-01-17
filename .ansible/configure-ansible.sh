@@ -13,6 +13,8 @@ if [ "$run_ansible_for_ec2_instance" == "no"];then
     exit 0
 fi
 
+ssh -V
+
 while true;
 do
 

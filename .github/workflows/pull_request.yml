@@ -24,6 +24,7 @@ jobs:
                 EOF
                 pwd
                 ls -ls
+                ssh -V
 
           - name: Deploy with Ansible
             run: bash ./.ansible/configure-ansible.sh app.infsite.org root ~/id_rsa yes 9022
