@@ -18,16 +18,17 @@ jobs:
     - name: secrets......
       env:
         TOKEN: ${{ secrets.USERNAME_REGISTRY }}
+        DOCKER_REPO: "marceloviana/websocket"
       run: |
         echo "Downloaded credentials: $TOKEN"
     - name: Checkout repository
       uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag marceoviana/websocket:latest
+      run: docker build . --file Dockerfile --tag $DOCKER_REPO:latest
     
     - name: Login in Hub-docker
       run: docker login -u ${{ secrets.USERNAME_REGISTRY }} -p ${{ secrets.PASSWORD_REGISTRY }} docker.io
     - name: Push docker image
-      run: docker push marceoviana/websocket:latest
+      run: docker push $DOCKER_REPO:latest
     - name: Resume vars
       run: echo 'docker login -u ${{ secrets.USERNAME_REGISTRY }} -p ${{ secrets.PASSWORD_REGISTRY }} docker.io'
