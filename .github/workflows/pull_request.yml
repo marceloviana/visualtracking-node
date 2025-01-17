@@ -1,12 +1,11 @@
-name: Deploy with Ansible
+name: Deployment in production with Ansible
 
 on:
     pull_request:
         branches:
         - "main"
 jobs:
-    install:
-        name: Install packeges
+    deploy:
         runs-on: ubuntu-latest
         steps:
           - name: checkout
@@ -16,6 +15,7 @@ jobs:
                 apt update && apt install -y pipx
                 pipx install --include-deps ansible
                 pipx install ansible-core
+                chmod +x /root/.local/bin/ansible-playbook
 
           - name: Deploy SSH Key
             run: |
