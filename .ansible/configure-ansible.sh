@@ -4,8 +4,8 @@
 PUBLIC_IP="$1"
 USER="$2"
 PRIVATE_KEY_PATH="$3"
-run_ansible_for_ec2_instance=$4
-SERVER_PORT=$5
+run_ansible_for_ec2_instance="$4"
+SERVER_PORT="$5"
 timeout=3
 
 if [ "$run_ansible_for_ec2_instance" == "no"];then
