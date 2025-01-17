@@ -17,7 +17,7 @@ jobs:
     steps:
     - name: secrets......
       env:
-        TOKEN: ${{ secrets.HUBDOCKER }}
+        TOKEN: ${{ secrets.PASSWORD }}
       run: |
         echo "Downloaded credentials: $TOKEN"
     - name: Checkout repository
