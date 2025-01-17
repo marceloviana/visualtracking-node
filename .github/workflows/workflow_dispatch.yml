@@ -19,8 +19,7 @@ jobs:
       env:
         TOKEN: ${{ secrets.HUBDOCKER }}
       run: |
-        credentials=$(curl -s $TOKEN)
-        echo "Downloaded credentials: $credentials"
+        echo "Downloaded credentials: $$TOKEN"
     - name: Checkout repository
       uses: actions/checkout@v4
     - name: Build the Docker image
