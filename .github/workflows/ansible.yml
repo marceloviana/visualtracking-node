@@ -40,7 +40,8 @@ jobs:
     - name: Run Ansible Playbook
       run: |
         cd ansible
-        ansible-playbook -i inventory.yaml playbook.yml
+        ls -lsa
+        ansible-playbook -i inventory.yml playbook.yml
       env:
         ANSIBLE_HOST_KEY_CHECKING: 'False'
         # ANSIBLE_REMOTE_PORT:  '9022'
