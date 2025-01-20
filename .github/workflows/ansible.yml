@@ -36,7 +36,7 @@ jobs:
                 [app.infsite.org]:9022 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBGuWJUHa8flRuNXWnjmtDd6CvdvMmAqrl7YihNe1HDEujdoDJ9H8qxHHqKnQzc6+9Bn8hBXU2GbvaZ9hnjGse+c=
 
               # Optional, galaxy requirements filepath
-              requirements: ./.ansible/playbook.yml
+              requirements: ansible/playbook.yml
               # Optional, additional flags to pass to ansible-playbook
               options: |
                 --inventory .hosts
