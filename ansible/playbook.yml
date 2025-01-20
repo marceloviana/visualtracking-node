@@ -2,8 +2,8 @@
   become: true
 
   tasks:
-    - name: Instalando pacotes
-      raw: apt-get update
+    # - name: Instalando pacotes
+      # raw: apt-get update
 
     # Instalação do Docker
     # - ansible.builtin.import_tasks: ./includes/playbook-instalacao-docker.yml
