@@ -37,7 +37,7 @@ jobs:
         ssh-keyscan -p 9022 -H "${{ secrets.REMOTE_HOST }}" >> ~/.ssh/known_hosts
     - name: Coping docker-compose to ${{ secrets.REMOTE_HOST }} 
       run: |
-        scp -p ${{ secrets.REMOTE_PORT }} -i ~/.ssh/known_hosts ~/docker-compose.yml root@${{ secrets.REMOTE_HOST }}:/app/docker-compose.yml
+        scp -p ${{ secrets.REMOTE_PORT }} -i ~/.ssh/id_rsa ~/docker-compose.yml root@${{ secrets.REMOTE_HOST }}:/app/docker-compose.yml
 
     # Execução do playbook Ansible
     - name: Run Ansible Playbook
