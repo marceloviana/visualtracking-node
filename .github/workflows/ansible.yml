@@ -35,12 +35,14 @@ jobs:
         echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -p 9022 -H "${{ secrets.REMOTE_HOST }}" >> ~/.ssh/known_hosts
+    - name: Coping docker-compose to ${{ secrets.REMOTE_HOST }} 
+      run: |
+        scp -p ${{ secrets.REMOTE_PORT }} -i ~/.ssh/known_hosts ~/docker-compose.yml root@${{ secrets.REMOTE_HOST }}:/app/docker-compose.yml
 
     # Execução do playbook Ansible
     - name: Run Ansible Playbook
       run: |
         cd ansible
-        ls -lsa
         ansible-playbook -i inventory.yml playbook.yml
       env:
         ANSIBLE_HOST_KEY_CHECKING: 'False'

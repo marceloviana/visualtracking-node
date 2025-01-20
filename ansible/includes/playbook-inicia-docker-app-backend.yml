@@ -1,4 +1,4 @@
 ---
-- name: Iniciando aplicação fastApi de Marcelo Viana em Docker
+- name: Run docker-compose...
   shell: |
-    > /root/ok.txt
+    cd /app/ && docker-compose up --build -d
