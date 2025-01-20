@@ -9,39 +9,19 @@ jobs:
         runs-on: ubuntu-latest
         steps:
           - name: Install Ansible
-            shell: bash
-            run: |
-              sudo apt update
-              sudo apt install -y ansible
-          - name: Run playbook
-            uses: dawidd6/action-ansible-playbook@v2
-            with:
-              # Required, playbook filepath
-              playbook: playbook.yml
-              # Optional, directory where playbooks live
-              directory: ansible
-              # Optional, SSH private key
-              key: ${{secrets.DEPLOY_KEY}}
-              # Optional, literal inventory file contents
-              inventory: |
-                [raspberry]
-                app.infsite.org:9022 ansible_user=ubuntu
-              
-                [raspberry:vars]
-                ansible_python_interpreter=/usr/bin/python3
+            run: | 
+                apt update && apt install -y ansible
 
-              # Optional, SSH known hosts file content
-              known_hosts: |
-                [app.infsite.org]:9022 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIvOIAc/mIUTRDdc2pOw7VzsftI1+x5u/FCFwp+T5GdN
-                [app.infsite.org]:9022 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBGuWJUHa8flRuNXWnjmtDd6CvdvMmAqrl7YihNe1HDEujdoDJ9H8qxHHqKnQzc6+9Bn8hBXU2GbvaZ9hnjGse+c=
-
-              # # Optional, galaxy requirements filepath
-              # requirements: playbook.yml
-              # Optional, additional flags to pass to ansible-playbook
-              options: |
-                --inventory .hosts
-                --limit raspberry
-                --extra-vars hello=there
-                --verbose
+          - name: checkout
+            uses: actions/checkout@v3
+            with: 
               run: |
+                cat <<EOF > ~/id_rsa
+                ${{secrets.DEPLOY_KEY}}
+                EOF
+                chmod 700 ~/id_rsa
+                chmod +x ./.ansible/configure-ansible.sh
                 ls -lsa
+
+          - name: Deploy with Ansible
+            run: bash ./.ansible/configure-ansible.sh app.infsite.org root ~/id_rsa yes 9022
