@@ -1,4 +1,4 @@
-name: Run Ansible Playbook
+name: Run Ansible Playbook.
 
 on:
   push:
