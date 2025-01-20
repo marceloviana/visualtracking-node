@@ -1,4 +1,4 @@
-- hosts: aws_devops
+- hosts: raspberry
   become: true
 
   tasks:

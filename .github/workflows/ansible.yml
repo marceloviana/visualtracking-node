@@ -1,0 +1,45 @@
+name: Deployment in production with Ansible
+
+on:
+    pull_request:
+        branches:
+        - "main"
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        steps:
+          - name: Install Ansible
+            shell: bash
+            run: |
+              sudo apt update
+              sudo apt install -y ansible
+          - name: Run playbook
+            uses: dawidd6/action-ansible-playbook@v2
+            with:
+              # Required, playbook filepath
+              playbook: deploy.yml
+              # Optional, directory where playbooks live
+              directory: ./.ansible
+              # Optional, SSH private key
+              key: ${{secrets.DEPLOY_KEY}}
+              # Optional, literal inventory file contents
+              inventory: |
+                [raspberry]
+                app.infsite.org:9022 ansible_user=ubuntu
+              
+                [raspberry:vars]
+                ansible_python_interpreter=/usr/bin/python3
+
+              # Optional, SSH known hosts file content
+              known_hosts: |
+                [app.infsite.org]:9022 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIvOIAc/mIUTRDdc2pOw7VzsftI1+x5u/FCFwp+T5GdN
+                [app.infsite.org]:9022 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBGuWJUHa8flRuNXWnjmtDd6CvdvMmAqrl7YihNe1HDEujdoDJ9H8qxHHqKnQzc6+9Bn8hBXU2GbvaZ9hnjGse+c=
+
+              # Optional, galaxy requirements filepath
+              requirements: ./.ansible/playbook.yml
+              # Optional, additional flags to pass to ansible-playbook
+              options: |
+                --inventory .hosts
+                --limit raspberry
+                --extra-vars hello=there
+                --verbose
