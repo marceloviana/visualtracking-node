@@ -43,3 +43,5 @@ jobs:
                 --limit raspberry
                 --extra-vars hello=there
                 --verbose
+              runs: |
+                ls -lsa
