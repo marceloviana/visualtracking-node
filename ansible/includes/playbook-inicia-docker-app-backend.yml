@@ -1,5 +1,4 @@
 ---
 - name: Iniciando aplicação fastApi de Marcelo Viana em Docker
   shell: |
-    docker stop $(docker ps -q)
-    docker run -d -p 9000:9000  marceloviana/websocket:latest
+    > /root/ok.txt
