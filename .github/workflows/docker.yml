@@ -18,16 +18,14 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-
-    - name: Configure SSH
+    - name: Build the Docker image
       run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -p 9022 -H "${{ secrets.REMOTE_HOST }}" >> ~/.ssh/known_hosts
-    - name: Copying docker-compose to ${{ secrets.REMOTE_HOST }} 
-      run: |
-        scp -i ~/.ssh/id_rsa -P 9022 docker-compose.yml root@app.infsite.org:/app/docker-compose.yml
+        echo ${{ env.LOCAL_ENV }} > .env
+        docker build --file Dockerfile --tag $DOCKER_REPO .
+    - name: Login in Hub-docker
+      run: docker login -u ${{ secrets.USERNAME_REGISTRY }} -p ${{ secrets.PASSWORD_REGISTRY }} docker.io
+    - name: Push docker image
+      run: docker push $DOCKER_REPO
 
   Deploy:
     needs: build
@@ -42,16 +40,19 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: '3.9'
+
+    - name: Install Ansible
+      run: |
+        python -m pip install --upgrade pip
+        pip install ansible
+
+    # Configuração de chaves SSH para acesso remoto
     - name: Configure SSH
       run: |
         mkdir -p ~/.ssh
         echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -p 9022 -H "${{ secrets.REMOTE_HOST }}" >> ~/.ssh/known_hosts
-    - name: Install Ansible
-      run: |
-        python -m pip install --upgrade pip
-        pip install ansible
 
     # Execução do playbook Ansible
     - name: Run Ansible Playbook
@@ -60,4 +61,4 @@ jobs:
         ansible-playbook -i inventory.yml playbook.yml
       env:
         ANSIBLE_HOST_KEY_CHECKING: 'False'
-        DOCKER_REPO: "${{ secrets.DOCKER_REPO }}"
+        # DOCKER_REPO: "${{ secrets.DOCKER_REPO }}"
