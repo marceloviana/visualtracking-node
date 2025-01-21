@@ -28,5 +28,5 @@ jobs:
   deploy:
     needs: build
     name: "Deploy in raspberry by Ansible"
-    uses: .github/workflows/ansible.yml
+    uses: ./.github/workflows/ansible.yml
     
