@@ -7,7 +7,7 @@ const {
 const secretName = `${process.env.ENVIRONMENT}/websocket-service`
   
 module.exports.getSecret = async () => {
-    return await new Promise( async (resolve) => {
+    return await new Promise( async (resolve, reject) => {
         const client = new SecretsManagerClient();
         const response = null
 
@@ -18,8 +18,12 @@ module.exports.getSecret = async () => {
             }),
           );
         } catch (e) {
-          console.warn("Using LOCAL .ENV")
-           resolve(process.env.LOCAL_ENV)
+          if ( process.env.LOCAL_ENV ) {
+            console.warn("Using LOCAL .ENV")
+            resolve(process.env.LOCAL_ENV)
+          } else {
+            reject("No .env found!")
+          }
         }
     
         if (response?.SecretString) {
