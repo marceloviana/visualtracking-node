@@ -22,3 +22,8 @@ jobs:
       run: docker login -u ${{ secrets.USERNAME_REGISTRY }} -p ${{ secrets.PASSWORD_REGISTRY }} docker.io
     - name: Push docker image
       run: docker push $DOCKER_REPO
+
+  deploy:
+    needs: build
+    name: "Deploy in raspberry by Ansible"
+    uses: ./.github/workflows/ansible.yml      
