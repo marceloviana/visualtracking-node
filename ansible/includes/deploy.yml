@@ -1,7 +1,7 @@
 ---
-- name: Run docker-compose...
+- name: Executando o deploy no Raspberry
   shell: |
-    if [ $(docker ps --filter name=redis | grep redis;  echo $?) -eq 0 ];then
+    if [ $(docker ps --filter name=redis | grep redis;  echo $?) -ne 0 ];then
       docker run -d  --restart=always -p 6379:6379 -name redis redis:latest
     fi
     docker pull marceloviana/websocket:latest
@@ -9,5 +9,7 @@
       docker restart websocket
       exit 0
     fi
-    docker run -d  --restart=always -p 9000:9000 -name websocket marceloviana/websocket:latest
+    if [ $(docker ps --filter name=websocket | grep websocket;  echo $?) -ne 0 ] && [ $(docker ps --filter status=restarting  wc -l) -gt 1 ];then
+      docker run -d  --restart=always -p 9000:9000 -name websocket marceloviana/websocket:latest
+    fi
 
