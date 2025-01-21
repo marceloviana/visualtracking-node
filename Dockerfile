@@ -1,10 +1,10 @@
-FROM node:slim AS prod
+FROM node:20  AS prod
 
 WORKDIR '/app'
 COPY package.json .
 COPY src src
 
-RUN npm update && apt-get update && apt-get install -y curl
+RUN npm install
 ENV AWS_REGION="us-east-2"
 ENV ENVIRONMENT=dev
 
