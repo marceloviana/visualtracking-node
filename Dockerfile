@@ -1,4 +1,4 @@
-FROM arm64v8/node:20 AS prod
+FROM node:20 AS prod
 
 WORKDIR '/app'
 COPY package.json .
