@@ -12,8 +12,6 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    env:
-      DOCKER_REPO: ${{ secrets.DOCKER_REPO }}
 
     steps:
     - name: Checkout repository
@@ -37,7 +35,7 @@ jobs:
       with:
         platforms: linux/arm/v7
         push: true
-        tags: "${{ secrets.DOCKER_REPO }}:arm"
+        tags: "${{ env.DOCKER_REPO }}:arm"
 
   Deploy:
     needs: build
