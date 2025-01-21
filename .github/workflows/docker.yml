@@ -28,6 +28,7 @@ jobs:
       run: docker push $DOCKER_REPO
 
   Deploy:
+    needs: build
     runs-on: ubuntu-latest
     steps:
     # Checkout do código do repositório

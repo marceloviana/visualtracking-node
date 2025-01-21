@@ -1,4 +1,6 @@
 ---
 - name: Run docker-compose...
   shell: |
-    cd /app/ && docker-compose up --build -d
+    cd /app/
+    docker-compose down
+    docker-compose up --build -d
