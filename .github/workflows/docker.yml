@@ -58,7 +58,7 @@ jobs:
     - name: Run Ansible Playbook
       run: |
         cd ansible
-        ansible-playbook -i inventory.yml playbook.yml
+        ansible-playbook -vvv -i inventory.yml playbook.yml
       env:
         ANSIBLE_HOST_KEY_CHECKING: 'False'
         # DOCKER_REPO: "${{ secrets.DOCKER_REPO }}"
