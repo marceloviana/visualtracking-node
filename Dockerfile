@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 node:20 AS prod
+FROM --platform=linux/arm/v7 node:20 AS prod
 
 WORKDIR '/app'
 COPY package.json .
