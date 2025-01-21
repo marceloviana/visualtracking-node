@@ -61,4 +61,3 @@ jobs:
         ansible-playbook -vvv -i inventory.yml playbook.yml
       env:
         ANSIBLE_HOST_KEY_CHECKING: 'False'
-        # DOCKER_REPO: "${{ secrets.DOCKER_REPO }}"
