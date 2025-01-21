@@ -21,7 +21,7 @@ jobs:
     - name: Build the Docker image
       run: |
         echo ${{ env.LOCAL_ENV }} > .env
-        docker build --file Dockerfile --tag $DOCKER_REPO .
+        docker build --no-cache -t $DOCKER_REPO .
     - name: Login in Hub-docker
       run: docker login -u ${{ secrets.USERNAME_REGISTRY }} -p ${{ secrets.PASSWORD_REGISTRY }} docker.io
     - name: Push docker image
