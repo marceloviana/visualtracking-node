@@ -30,6 +30,7 @@ jobs:
 
   deploy:
     needs: build
-    uses: ./.github/workflows/ansible.yml
+    uses: ./.github/workflows/actions/ansible.yml
     with:
       some_input: "Hello from Main Workflow"
+
