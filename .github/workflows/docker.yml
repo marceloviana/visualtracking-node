@@ -35,7 +35,7 @@ jobs:
       with:
         platforms: linux/arm/v7
         push: true
-        tags: ${{env.DOCKER_REPO}}:raspberry
+        tags: marceloviana/websocket:raspberry
 
   Deploy:
     needs: build
