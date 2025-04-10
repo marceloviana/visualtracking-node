@@ -1,8 +1,8 @@
 const { healthCheckValidations } = require('./health-check')
-const { checkOnlineUserController } = require('../controller/')
-// const { auth, requiredScopes } = require('express-oauth2-jwt-bearer');
-const { jwtCheck, preJwtCheck } = require('../utils/checkToken')
-
+const { jwtCheck, preJwtCheck } = require('../middleware/checkToken')
+const userRouter = require('./userRouter')
+const websocketRouter = require('./websocketRouter')
+const trackRouter = require('./trackRouter')
 
 module.exports = (app) => {
 
@@ -27,43 +27,17 @@ module.exports = (app) => {
         }
         res.status(503).json(validations.message)
     })
-    
-    /*
-        endpoint for delivery rooms before authenticate middleware.
-    */
-    app.get('/br-websocket/getAllRooms', preJwtCheck, jwtCheck, (req, res) => {
-    
-        let envList = process.env.ROOMS.split(",")
-        let rooms = envList.filter(item => item != 'ALL_USER_ROOM')
-        return res.json(rooms)
-    })
-
-    /*
-        endpoint for delivery the socket.io library.
-    */
-    app.get('/br-websocket/socketIoLib', (req, res) => {
-
-        res.download(`${__dirname}/lib/socket.io.js`)
-    
-    })  
-    
-    /*
-        endpoint for delivery connected user.
-    */
-    app.get(['/br-websocket/check-online-user/', '/br-websocket/check-online-user/:email'], async (req, res) => {
-
-        let response = await checkOnlineUserController(req)
-        return res.status(200).json(response)
-    
-    })
 
     /*
         JWT validate
     */
-        app.get('/br-websocket/token-validate/', preJwtCheck, jwtCheck, (req, res) => {
+    app.get('/br-websocket/token-validate/', preJwtCheck, jwtCheck, (req, res) => {
 
-            return res.status(200).json("Authorized!")
-        
-        })    
-
+        return res.status(200).json("Authorized!")
+    
+    })
+    // Modules
+    websocketRouter(app)
+    userRouter(app)
+    trackRouter(app)
 }

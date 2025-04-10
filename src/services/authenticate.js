@@ -1,5 +1,5 @@
 const { redis } = require('../model')
-const { tokenValidate } = require('../utils/checkToken')
+const { tokenValidate } = require('../middleware/checkToken')
 
 /*
     Websocket connect validate

@@ -7,12 +7,14 @@ var cors = require('cors')
 const path = require('node:path')
 const io = require("socket.io")(serverApp, {
   cors: {
-    origin: "*",
     methods: ["GET", "POST"]
   }
 })
-app.use(cors())
-
+app.use(cors({
+  origin: ['http://localhost:5173', 'https://visualtracking.infsite.org'],
+  credentials: true
+}))
+app.use(express.json());
 // Routers
 require('./router')(app)
 

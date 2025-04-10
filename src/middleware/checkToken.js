@@ -1,5 +1,7 @@
 var request = require('request');
-const { auth, requiredScopes } = require('express-oauth2-jwt-bearer');
+const { auth } = require('express-oauth2-jwt-bearer');
+const cookie = require('cookie')
+const { checkCardinalityController } = require('../controller/userAppController')
 
 const tokenValidate = async (token) => {
 
@@ -52,8 +54,30 @@ const jwtCheck = (req, res, next) => {
     }
 }
 
+const protectedMiddleware = (req, res, next) => {
+    const cookies = cookie.parse(req.headers.cookie || '')
+    const token = cookies.auth_token
+  
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET)
+      next(decoded)
+    } catch {
+        return res.status(401).json('Login failed')
+    }
+  }
+
+  const protectedApiMiddleware = async (req, res, next) => {
+    if (await checkCardinalityController(req)) {
+        next()
+        return
+    }
+    return res.status(401).json('Token failed')
+  }
+
 module.exports = {
     tokenValidate,
     jwtCheck,
-    preJwtCheck
+    preJwtCheck,
+    protectedMiddleware,
+    protectedApiMiddleware
 }
