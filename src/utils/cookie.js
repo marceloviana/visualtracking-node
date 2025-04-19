@@ -3,43 +3,42 @@ const cookie = require('cookie')
 const jwt = require('jsonwebtoken')
 const JWT_SECRET = process.env.JWT_SECRET
 
-const setCookie = (req, res, user) => {
+const setCookie = async (req, res, user) => {
 
-    const token = jwt.sign({user}, JWT_SECRET, { expiresIn: '1h' })
-    // controle de sessão e armazenamento do JWT transitado automaticamente (withcredentials)
-    res.setHeader('Set-Cookie', cookie.serialize('auth_token', token, {
-      httpOnly: req.protocol == 'https'? true : false,
-      secure: req.protocol == 'https'? true : false,
-      sameSite: 'strict',
-      maxAge: 3600,
-      path: '/'
-    }))
-
-    // // apenas para ajudar no controler/manipulação de sessão no frontend (sem http-only).    
-    // res.setHeader('Set-Cookie', cookie.serialize('user_meta', token, {
-    //   httpOnly: false,
-    //   secure: req.protocol == 'https'? true : false,
-    //   sameSite: 'strict',
-    //   maxAge: 3600,
-    //   path: '/'
-    // })) 
+    const token = jwt.sign({user}, JWT_SECRET, { expiresIn: '1d' })
   
-    return
+    res.setHeader('Set-Cookie', [
+      `user_meta=${user}; ${req.protocol == 'https'? 'HttpOnly': ''}; Path=/; Max-Age=86400`,
+      `auth_token=${token}; ${req.protocol == 'https'? 'HttpOnly': ''}; Path=/; Max-Age=86400`
+    ]);
 
-   }
+}
 
-const verifyCookie = (req, res, next) => {
-  const cookies = cookie.parse(req.headers.cookie || '')
-  const token = cookies.auth_token
+const deleteCookie = async (req, res) => {
 
-  try {
-    if (jwt.verify(token, JWT_SECRET)) next()
-  } catch {
-    return false
-  }
+  res.setHeader('Set-Cookie', [
+    `user_meta=; ${req.protocol == 'https'? 'HttpOnly': ''}; Path=/; Max-Age=0`,
+    `auth_token=; ${req.protocol == 'https'? 'HttpOnly': ''}; Path=/; Max-Age=0`
+  ]);
+
+}
+
+const getUserDataFromCookie = (req) => {
+      let cookies = cookie.parse(req.headers.cookie || '')
+      let accessToken = cookies.auth_token
+      let decoded = undefined
+      // O uso do JWT aqui é apenas para recuperar o email do usuário contido no cookie de accesso.
+      // Isso evita que o usuário tente criar um token para uma aplicação que não é dele.
+      try {
+          decoded = jwt.verify(accessToken, process.env.JWT_SECRET)
+          return JSON.parse(decoded.user)
+      } catch (error) {
+          return false
+      }
 }
 
 module.exports = {
   setCookie,
-  verifyCookie
+  deleteCookie,
+  getUserDataFromCookie
 }

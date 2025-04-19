@@ -6,11 +6,11 @@ const { tokenValidate } = require('../middleware/checkToken')
 */
 const authAsSocketPostConnect = async(socket) => {
 
-    // keyName = `${socket.handshake.auth.email}_${socket.id}`
-    keyName = `${socket.handshake.auth.email}`
+    const keyName = `${socket.handshake.auth.email}_${socket.id}`
+    // const keyName = `${socket.handshake.auth.email}`
     if (await tokenValidate(socket.handshake.auth.token) === 200) {
 
-        console.log(`New user connected: ${socket.id}`)
+        console.log(`New user connected: ${socket.handshake.auth.email}`)
         /* 
           register in Redis
         */

@@ -1,12 +1,15 @@
 const { orchestrationController } = require('./orchestrationController')
 const { checkOnlineUserController } = require('./checkOnlineUserController')
-const { trackController } = require('./trackController')
-const { createAppTokenController, checkCardinalityController } = require('./userAppController')
+const { trackController, getTrackController } = require('./trackController')
+const { createAppTokenController, checkCardinalityController, getUserAppController, deleteUserAppController } = require('./userAppController')
 
 module.exports = {
     orchestrationController,
     checkOnlineUserController,
     trackController,
     createAppTokenController,
-    checkCardinalityController
+    checkCardinalityController,
+    getUserAppController,
+    deleteUserAppController,
+    getTrackController
 }

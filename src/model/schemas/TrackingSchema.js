@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const TrackingSchema = new mongoose.Schema({
   appName: String,
+  userApp: String,
   transactionId: String,
   tracking: [
       {

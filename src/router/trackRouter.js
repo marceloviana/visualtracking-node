@@ -1,23 +1,22 @@
-const { trackController, createAppTokenController } = require('../controller')
-const { jwtCheck, preJwtCheck } = require('../middleware/checkToken')
+const { trackController, getTrackController } = require('../controller')
 const { protectedApiMiddleware } = require('../middleware')
 
-module.exports = (app) => {
+module.exports = (app, websocketInstance) => {
     /*
         endpoint for send message websocket by Rest.
     */
     app.post('/br-websocket/track', protectedApiMiddleware, async (req, res) => {
 
-        let response = await trackController(req)
+        let response = await trackController(req, websocketInstance)
         return res.status(200).json(response)
     })
-    /*
-        endpoint for create token for application
-    */
-    app.post('/br-websocket/create-userApp', async (req, res) => {
 
-        let response = await createAppTokenController(req, res)
-        if (!response) return res.status(401).json('Token failed')
+    /*
+        endpoint for send message websocket by Rest.
+    */
+    app.post('/br-websocket/getTrack', protectedApiMiddleware, async (req, res) => {
+
+        let response = await getTrackController(req, websocketInstance)
         return res.status(200).json(response)
     })    
 }

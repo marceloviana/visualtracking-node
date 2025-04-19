@@ -1,10 +1,11 @@
 const { healthCheckValidations } = require('./health-check')
 const { jwtCheck, preJwtCheck } = require('../middleware/checkToken')
-const userRouter = require('./userRouter')
 const websocketRouter = require('./websocketRouter')
 const trackRouter = require('./trackRouter')
+const user = require('./user')
+const userApp = require('./userApp')
 
-module.exports = (app) => {
+module.exports = (app, websocketInstance) => {
 
     /*
         Hello everyone
@@ -38,6 +39,7 @@ module.exports = (app) => {
     })
     // Modules
     websocketRouter(app)
-    userRouter(app)
-    trackRouter(app)
+    user(app)
+    userApp(app)
+    trackRouter(app, websocketInstance)
 }

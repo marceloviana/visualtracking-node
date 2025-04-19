@@ -1,5 +1,6 @@
-const { protectedApiMiddleware } = require('./checkToken')
+const { protectedApiMiddleware, protectedMiddleware } = require('./checkToken')
 
 module.exports = {
-    protectedApiMiddleware
+    protectedApiMiddleware,
+    protectedMiddleware
 }

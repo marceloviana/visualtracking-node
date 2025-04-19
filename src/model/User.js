@@ -6,6 +6,10 @@ const User = mongoose.model('User', UserSchema);
 
 const createUser = async (user) => {
 
+  if (await User.findOne({email: user.email})) {
+    return `${user['email']} already exists!`
+  }
+  
   let dataUser = new User(user)
   return await dataUser.save()
 }
@@ -14,7 +18,7 @@ const login = async ( user ) => {
 
   let userDoc = await User.findOne({email: user.email})
   if (!userDoc) {
-    return `Not found login ${user['email']}`
+    return `${user['email']} not found login`
   }
   
   let password = await bcrypt.compare(user['password'], userDoc.password)
@@ -35,8 +39,8 @@ const deleteManyUser = async (user) => {
 
 const updateUser = async (user) => {
   if (!user._id) return "_id isn't defined!"
-  
-  return await User.updateOne({_id: user._id}, {$set: {user, ...{updatedAt: Date.now()}}})
+  user['updatedAt'] = Date.now()
+  return await User.findOneAndUpdate({_id: user._id}, user, { new: true })
 }
 
 module.exports = {

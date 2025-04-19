@@ -1,31 +1,7 @@
 const { redis } = require('../model')
 const rooms = process.env.ROOMS.split(",")
 const { authAsSocketPostConnect } = require('../services/authenticate')
-const sendMessageinSocket = async (io, data) => {
-
-  let payload = JSON.stringify({type: 'message', data: data['message'], email: data.email, sender: data.sender})
-  
-  if ( data['broadcast'] ) {
-    io.emit(data['room'], payload)
-  } else {
-    // Retrieve all connections for user (browser tabs)
-    // console.warn("Before Redis:", data['email'])
-    let userProfile = await redis.getAllKeys(data['email'])
-    // console.warn("Searching for user in Redis:", userProfile)
-    for (let socket_name of userProfile) {
-      // Retrieve socket.id by key name in redis
-      let userProfile = JSON.parse(await redis.get(socket_name))
-      // console.warn("Sending message to : ", userProfile.socketId, '<--->', userProfile.email, '<--->', userProfile.userRoom)
-      // If the sender does not inform the Room, then the Websocket will send to all user sockets registered in Redis.
-      let userRoom = data['room'] === 'ALL_USER_ROOM' ? userProfile.userRoom : data['room']
-      io.to(userProfile.socketId).emit(userRoom, payload)
-    }
-    // send back to sender
-    let userProfileSender = JSON.parse(await redis.get(data.sender))
-    console.log(userProfileSender.socketId)
-    io.to(userProfileSender.socketId).emit(data['room'], payload)
-  }
-}
+const sendMessageinSocketController = require('./sendMessageInSocketController')
 
 const updateAllUsersConnected =  (io) => {
   setTimeout(async()=> {
@@ -52,14 +28,14 @@ module.exports.orchestrationController = (io) => {
       for (i of rooms) {
         // Input method by socket user
         socket.on(i, async (data) => {
-          sendMessageinSocket(io, data)
+          sendMessageinSocketController(io, data)
         })
       }
 
       /*
         Update all users connected
       */
-      updateAllUsersConnected(io)
+      // updateAllUsersConnected(io)
 
       /* 
         disconnect and remove from Redis
