@@ -22,7 +22,6 @@ jobs:
 
     - name: Copy files to Raspberry Pi
       run: |
-        # rsync -e "ssh -p 9022 -i /tmp/.ssh/id_ed25519" -avz --delete ./ ${{ secrets.RPI_USER }}@${{ secrets.RPI_HOST }}:${{ secrets.RPI_PATH }}
         rsync -e 'ssh -p 9022 -i /tmp/.ssh/id_ed25519' -avz --delete ./ marcelo@app.infsite.org:app
 
     - name: Restart app (via SSH)
