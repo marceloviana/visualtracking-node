@@ -18,15 +18,15 @@ jobs:
         mkdir -p /tmp/.ssh
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/.ssh/id_ed25519
         chmod 600 /tmp/.ssh/id_ed25519
-        ssh-keyscan -H ${{ secrets.RPI_HOST }} >> /tmp/.ssh/known_hosts
+        ssh-keyscan -p 9022 -H ${{ secrets.RPI_HOST }} >> /tmp/.ssh/known_hosts
 
     - name: Copy files to Raspberry Pi
       run: |
-        rsync -avz --delete ./ ${{ secrets.RPI_USER }}@${{ secrets.RPI_HOST }}:${{ secrets.RPI_PATH }}
+        rsync -e "ssh -p 9022 -i /tmp/.ssh/id_ed25519" -avz --delete ./ ${{ secrets.RPI_USER }}@${{ secrets.RPI_HOST }}:${{ secrets.RPI_PATH }}
 
     - name: Restart app (via SSH)
       run: |
-        ssh ${{ secrets.RPI_USER }}@${{ secrets.RPI_HOST }} << 'EOF'
+        ssh -p 9022 -i /tmp/.ssh/id_ed25519 ${{ secrets.RPI_USER }}@${{ secrets.RPI_HOST }} << 'EOF'
           cd ${{ secrets.RPI_PATH }}
           docker-compose down
           docker-compose up -d --build
