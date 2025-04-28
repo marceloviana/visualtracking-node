@@ -15,8 +15,7 @@ jobs:
 
     - name: "Creating ENV file"
       run: |
-        echo "LOCAL_ENV=${{secrets.LOCAL_ENV}}" > .env
-        cat .env
+        echo "LOCAL_ENV=${{secrets.LOCAL_ENV}}" >> .env
 
     - name: Set up SSH
       run: |
@@ -26,7 +25,7 @@ jobs:
         ssh-keyscan -p 9022 -H ${{ secrets.RPI_HOST }} >> ~/.ssh/known_hosts
 
     - name: Copy files to Raspberry Pi
-      run: rsync -e "ssh -p 9022 -i ~/.ssh/id_ed25519" -avz --delete ./ marcelo@app.infsite.org:app
+      run: rsync -e "ssh -p 9022 -i ~/.ssh/id_ed25519" -avhz --delete ./ marcelo@app.infsite.org:app
 
     - name: Restart app (via SSH)
       run: |
