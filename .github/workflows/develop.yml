@@ -15,7 +15,7 @@ jobs:
 
     - name: "Creating ENV file"
       run: |
-        echo ${{secrets.LOCAL_ENV}} >> .env
+        echo ${{vars.LOCAL_ENV}} >> .env
 
     - name: Set up SSH
       run: |

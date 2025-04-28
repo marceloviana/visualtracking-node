@@ -1,4 +1,4 @@
-const { getSecret } = require('./utils/secretsManager')
+const { getSecret } = require('./utils/localEnv')
 return new Promise(async (resolve) => {
     let waitSecret = setInterval(async() => {
         let secrets = await getSecret()
