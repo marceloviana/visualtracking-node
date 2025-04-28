@@ -7,7 +7,9 @@ services:
       - '6379:6379'
     hostname: redisserver
   websocket:
-    image: "node:20"
+    build:
+      context: .
+      dockerfile: Dockerfile
     restart: always
     ports:
       - '9000:9000'
