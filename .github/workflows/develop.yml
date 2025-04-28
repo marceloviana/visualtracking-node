@@ -15,22 +15,22 @@ jobs:
 
     - name: "Creating ENV file"
       run: |
-        echo ${{secrets.ENV_BASE64}} | base64 --decode >> .env
+        echo ${{vars.ENV_BASE64}} | base64 --decode >> .env
 
     - name: Set up SSH
       run: |
         mkdir -p ~/.ssh
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
         chmod 600 ~/.ssh/id_ed25519
-        ssh-keyscan -p 9022 -H ${{ secrets.RPI_HOST }} >> ~/.ssh/known_hosts
+        ssh-keyscan -p 9022 -H ${{ vars.RPI_HOST }} >> ~/.ssh/known_hosts
 
     - name: Copy files to Raspberry Pi
       run: rsync -e "ssh -p 9022 -i ~/.ssh/id_ed25519" -avhz --delete ./ marcelo@app.infsite.org:app
 
     - name: Restart app (via SSH)
       run: |
-        ssh -p 9022 -i ~/.ssh/id_ed25519 ${{ secrets.RPI_USER }}@${{ secrets.RPI_HOST }} << 'EOF'
-          cd ${{ secrets.RPI_PATH }}
+        ssh -p 9022 -i ~/.ssh/id_ed25519 ${{ vars.RPI_USER }}@${{ vars.RPI_HOST }} << 'EOF'
+          cd ${{ vars.RPI_PATH }}
           docker-compose down
           docker-compose up -d --build
         EOF
