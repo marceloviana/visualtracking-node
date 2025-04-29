@@ -8,8 +8,8 @@ const setCookie = async (req, res, user) => {
     const token = jwt.sign({user}, JWT_SECRET, { expiresIn: '1d' })
   
     res.setHeader('Set-Cookie', [
-      `user_meta=${user}; ${req.protocol == 'https'? 'HttpOnly': ''}; ${req.protocol == 'https'? 'Secure': ''}; SameSite=None; Path=/; Max-Age=86400`,
-      `auth_token=${token}; ${req.protocol == 'https'? 'HttpOnly': ''}; ${req.protocol == 'https'? 'Secure': ''}; SameSite=None; Path=/; Max-Age=86400`
+      `user_meta=${user}; ${req.protocol == 'https'? 'HttpOnly': ''}; Path=/; Max-Age=86400`,
+      `auth_token=${token}; ${req.protocol == 'https'? 'HttpOnly': ''}; Path=/; Max-Age=86400`
     ]);
 
 }
@@ -17,8 +17,8 @@ const setCookie = async (req, res, user) => {
 const deleteCookie = async (req, res) => {
 
   res.setHeader('Set-Cookie', [
-    `user_meta=; ${req.protocol == 'https'? 'HttpOnly': ''}; ${req.protocol == 'https'? 'Secure': ''}; SameSite=None; Path=/; Max-Age=0`,
-    `auth_token=; ${req.protocol == 'https'? 'HttpOnly': ''}; ${req.protocol == 'https'? 'Secure': ''}; SameSite=None; Path=/; Max-Age=0`
+    `user_meta=; ${req.protocol == 'https'? 'HttpOnly': ''}; Path=/; Max-Age=0`,
+    `auth_token=; ${req.protocol == 'https'? 'HttpOnly': ''}; Path=/; Max-Age=0`
   ]);
 
 }
