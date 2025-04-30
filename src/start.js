@@ -11,7 +11,7 @@ const io = require("socket.io")(serverApp, {
   }
 })
 app.use(cors({
-  origin: ['http://localhost:8080', 'http://localhost:5173', 'http://app.infsite.org:9000', 'http://app.infsite.org:8000', 'http://api.infsite.org:9000', 'http://api.infsite.org:8000'],
+  origin: ['http://localhost:8080', 'http://localhost:5173', 'http://app.infsite.org:9000', 'http://app.infsite.org:8000', 'http://api.infsite.org:9000', 'http://api.infsite.org:8000', 'https://api.infsite.org', 'https://app.infsite.org'],
   credentials: true
 }))
 app.use(express.json());
