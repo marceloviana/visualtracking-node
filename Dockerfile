@@ -9,4 +9,4 @@ RUN npm install
 ENV AWS_REGION="us-east-2"
 ENV ENVIRONMENT=dev
 
-# CMD ["npm", "start"]
+CMD ["npm", "run", "start"]
