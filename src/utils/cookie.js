@@ -5,8 +5,8 @@ const JWT_SECRET = process.env.JWT_SECRET
 
 const setCookieWithHTTPS = (res, user, token) => {
   res.setHeader('Set-Cookie', [
-    `user_meta=${user}; Secure; SamaSite=None; Path=/; Max-Age=86400`,
-    `auth_token=${token}; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=86400`
+    `user_meta=${user}; Secure; SameSite=Lax; Path=/; Domain=.infsite.org; Max-Age=86400`,
+    `auth_token=${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Domain=.infsite.org; Max-Age=86400`
   ]);  
 }
 
@@ -19,8 +19,8 @@ const setCookieWithoutHTTPS = (res, user, token) => {
 
 const deleteCookieWithHTTPS = (res, user, token) => {
   res.setHeader('Set-Cookie', [
-    `user_meta=${user}; HttpOnly; Secure; Path=/; Max-Age=0`,
-    `auth_token=${token}; HttpOnly; Secure; Path=/; Max-Age=0`
+    `user_meta=${user}; HttpOnly; Secure; SameSite=Lax Path=/; Domain=.infsite.org; Max-Age=0`,
+    `auth_token=${token}; HttpOnly; Secure; SameSite=Lax Path=/; Domain=.infsite.org; Max-Age=0`
   ]);  
 }
 
