@@ -4,17 +4,19 @@ const jwt = require('jsonwebtoken')
 const JWT_SECRET = process.env.JWT_SECRET
 
 const setCookieWithHTTPS = (res, user, token) => {
+  console.log('HTTPS')
   res.setHeader('Set-Cookie', [
     `user_meta=${user}; Secure; SameSite=Lax; Path=/; Domain=.infsite.org; Max-Age=86400`,
     `auth_token=${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Domain=.infsite.org; Max-Age=86400`
-  ]);  
+  ]);
 }
 
 const setCookieWithoutHTTPS = (res, user, token) => {
+  console.log('HTTP')
   res.setHeader('Set-Cookie', [
-    `user_meta=${user}; Path=/; Max-Age=86400`,
-    `auth_token=${token}; Path=/; Max-Age=86400`
-  ]);  
+    `user_meta=${user}; SameSite=Lax; Path=/; Domain=localhost; Max-Age=86400`,
+    `auth_token=${token}; HttpOnly; SameSite=Lax; Path=/; Domain=localhost; Max-Age=86400`
+  ]);
 }
 
 const deleteCookieWithHTTPS = (res, user, token) => {
@@ -26,8 +28,8 @@ const deleteCookieWithHTTPS = (res, user, token) => {
 
 const deleteCookieWithoutHTTPS = (res) => {
   res.setHeader('Set-Cookie', [
-    `user_meta=${user}; Path=/; Max-Age=0`,
-    `auth_token=${token}; Path=/; Max-Age=0`
+  `user_meta=${user}; SameSite=Lax; Path=/; Domain=localhost; Max-Age=0`,
+  `auth_token=${token}; HttpOnly; SameSite=Lax; Path=/; Domain=localhost; Max-Age=0`
   ]);
 }
 
