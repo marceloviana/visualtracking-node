@@ -11,14 +11,14 @@ const setCookie = async (req, res, user) => {
     await res.cookie("auth_token", token, {
       "httpOnly": true,
       "secure": req.protocol == 'https'? true : false,
-      "sameSite": req.headers.origin == 'http://local.infsite.org:8080'? "": "Lax",
+      "sameSite": "Lax",
       "maxAge": expiration,
       "domain": domain
     });
     await res.cookie("user_meta", user, {
       "httpOnly": false,
       "secure": req.protocol == 'https'? true : false,
-      "sameSite": req.headers.origin == 'http://local.infsite.org:8080'? "": "Lax",
+      "sameSite": "Lax",
       "maxAge": expiration,
       "domain": domain
     });
@@ -30,14 +30,14 @@ const deleteCookie = async (req, res) => {
   await res.cookie("auth_token", token, {
     "httpOnly": true,
     "secure": req.protocol == 'https'? true : false,
-    "sameSite": req.headers.origin == 'http://local.infsite.org:8080'? "None": "Lax",
+    "sameSite": "Lax",
     "maxAge": 0,
     "domain": domain
   });
   await res.cookie("user_meta", user, {
     "httpOnly": false,
     "secure": req.protocol == 'https'? true : false,
-    "sameSite": req.headers.origin == 'http://local.infsite.org:8080'? "None": "Lax",
+    "sameSite": "Lax",
     "maxAge": 0,
     "domain": domain
   });
