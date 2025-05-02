@@ -42,8 +42,11 @@ module.exports = (app, websocketInstance) => {
         JWT validate
     */
     app.post('/br-websocket/cookie/', (req, res) => {
-        res.cookie(req.body.name, req.body.value, req.body.param);
+        req.body.forEach(cookie => {
+            res.cookie(cookie.name, cookie.value, cookie.param);
+        })
         return res.status(200).json(req.headers)
+
     
     })
 
