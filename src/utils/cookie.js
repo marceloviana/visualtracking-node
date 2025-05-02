@@ -5,10 +5,20 @@ const JWT_SECRET = process.env.JWT_SECRET
 
 const setCookieWithHTTPS = (res, user, token) => {
   console.log('HTTPS')
-  res.setHeader('Set-Cookie', [
-    `user_meta=${user}; Secure; SameSite=Lax; Path=/; Domain=.infsite.org; Max-Age=86400`,
-    `auth_token=${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Domain=.infsite.org; Max-Age=86400`
-  ]);
+  res.cookie("auth_token", token, {
+                                  "httpOnly": true,
+                                  "secure": true,
+                                  "sameSite": "Lax",
+                                  "maxAge": 3600000,
+                                  "domain": ".infsite.org"
+                                });
+  res.cookie("user_meta", user, {
+                                  "httpOnly": false,
+                                  "secure": true,
+                                  "sameSite": "Lax",
+                                  "maxAge": 3600000,
+                                  "domain": ".infsite.org"
+                                });                                
 }
 
 const setCookieWithoutHTTPS = (res, user, token) => {
