@@ -7,7 +7,7 @@ const setCookie = async (req, res, user) => {
 
     const token = jwt.sign({user}, JWT_SECRET, { expiresIn: '1d' })
     let origin = req.headers.origin || '.infsite.org'
-    let domain = origin.replace(/.*:\/\//gi, '')
+    let domain = '.infsite.org' // origin.replace(/.*:\/\//gi, '')
     console.log('origin:::', domain)
 
     await res.cookie("auth_token", token, {
