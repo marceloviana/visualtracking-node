@@ -3,21 +3,21 @@ const cookie = require('cookie')
 const jwt = require('jsonwebtoken')
 const JWT_SECRET = process.env.JWT_SECRET
 
-const setCookieWithHTTPS = (res, user, token) => {
+const setCookieWithHTTPS = async (req, res, user, token) => {
   console.log('HTTPS')
-  res.cookie("auth_token", token, {
+  await res.cookie("auth_token", token, {
                                   "httpOnly": true,
                                   "secure": true,
                                   "sameSite": "Lax",
-                                  "maxAge": 3600000,
-                                  "domain": ".infsite.org"
+                                  "maxAge": 60 * 60 * 1000,
+                                  "domain": req.headers.host
                                 });
-  res.cookie("user_meta", user, {
+  await res.cookie("user_meta", user, {
                                   "httpOnly": false,
                                   "secure": true,
                                   "sameSite": "Lax",
-                                  "maxAge": 3600000,
-                                  "domain": ".infsite.org"
+                                  "maxAge": 60 * 60 * 1000,
+                                  "domain": req.headers.host
                                 });                                
 }
 
@@ -47,14 +47,10 @@ const setCookie = async (req, res, user) => {
 
     const token = jwt.sign({user}, JWT_SECRET, { expiresIn: '1d' })
   
-    // res.setHeader('Set-Cookie', [
-    //   `user_meta=${user}; ${req.protocol == 'https'? 'HttpOnly': ''}; Path=/; Max-Age=86400`,
-    //   `auth_token=${token}; ${req.protocol == 'https'? 'HttpOnly': ''}; Path=/; Max-Age=86400`
-    // ]);
     if (req.protocol == 'https') {
-      setCookieWithHTTPS(res, user, token)
+      await setCookieWithHTTPS(req, res, user, token)
     } else {
-      setCookieWithoutHTTPS(res, user, token)
+      await setCookieWithoutHTTPS(req, res, user, token)
     }
 
 }

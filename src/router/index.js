@@ -45,6 +45,7 @@ module.exports = (app, websocketInstance) => {
         req.body.forEach(cookie => {
             res.cookie(cookie.name, cookie.value, cookie.param);
         })
+        console.log(req.headers.host)
         return res.status(200).json(req.headers)
 
     
