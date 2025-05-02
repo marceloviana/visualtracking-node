@@ -12,14 +12,14 @@ const setCookie = async (req, res, user) => {
       "secure": req.protocol == 'https'? true : false,
       "sameSite": "Lax",
       "maxAge": 60 * 60 * 1000,
-      "domain": req.headers.host
+      "domain": req.headers.origin
     });
     await res.cookie("user_meta", user, {
       "httpOnly": false,
       "secure": req.protocol == 'https'? true : false,
       "sameSite": "Lax",
       "maxAge": 60 * 60 * 1000,
-      "domain": req.headers.host
+      "domain": req.headers.origin
     });
 
 }
@@ -31,14 +31,14 @@ const deleteCookie = async (req, res) => {
     "secure": req.protocol == 'https'? true : false,
     "sameSite": "Lax",
     "maxAge": 60 * 60 * 1000,
-    "domain": req.headers.host
+    "domain": req.headers.origin
   });
   await res.cookie("user_meta", user, {
     "httpOnly": false,
     "secure": req.protocol == 'https'? true : false,
     "sameSite": "Lax",
     "maxAge": 60 * 60 * 1000,
-    "domain": req.headers.host
+    "domain": req.headers.origin
   });
 
 }
