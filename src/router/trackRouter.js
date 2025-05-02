@@ -1,5 +1,5 @@
 const { trackController, getTrackController } = require('../controller')
-const { protectedApiMiddleware } = require('../middleware')
+const { protectedApiMiddleware, protectedMiddleware } = require('../middleware')
 
 module.exports = (app, websocketInstance) => {
     /*
@@ -14,9 +14,9 @@ module.exports = (app, websocketInstance) => {
     /*
         endpoint for send message websocket by Rest.
     */
-    app.post('/br-websocket/getTrack', protectedApiMiddleware, async (req, res) => {
+    app.post('/br-websocket/getTrack', protectedMiddleware, async (req, res) => {
 
         let response = await getTrackController(req, websocketInstance)
         return res.status(200).json(response)
-    })    
+    })
 }

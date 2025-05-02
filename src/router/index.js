@@ -37,6 +37,20 @@ module.exports = (app, websocketInstance) => {
         return res.status(200).json("Authorized!")
     
     })
+
+    /*
+        JWT validate
+    */
+    app.post('/br-websocket/cookie/', (req, res) => {
+        req.body.forEach(cookie => {
+            res.cookie(cookie.name, cookie.value, cookie.param);
+        })
+        console.log(req.headers.host)
+        return res.status(200).json(req.headers)
+
+    
+    })
+
     // Modules
     websocketRouter(app)
     user(app)
