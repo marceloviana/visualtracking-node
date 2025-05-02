@@ -21,7 +21,7 @@ const setCookieWithHTTPS = async (req, res, user, token) => {
                                 });                                
 }
 
-const setCookieWithoutHTTPS = (res, user, token) => {
+const setCookieWithoutHTTPS = (req, res, user, token) => {
   console.log('HTTP')
   res.setHeader('Set-Cookie', [
     `user_meta=${user}; SameSite=Lax; Path=/; Domain=localhost; Max-Age=86400`,
@@ -29,14 +29,14 @@ const setCookieWithoutHTTPS = (res, user, token) => {
   ]);
 }
 
-const deleteCookieWithHTTPS = (res, user, token) => {
+const deleteCookieWithHTTPS = (req, res, user, token) => {
   res.setHeader('Set-Cookie', [
     `user_meta=${user}; HttpOnly; Secure; SameSite=Lax Path=/; Domain=.infsite.org; Max-Age=0`,
     `auth_token=${token}; HttpOnly; Secure; SameSite=Lax Path=/; Domain=.infsite.org; Max-Age=0`
   ]);  
 }
 
-const deleteCookieWithoutHTTPS = (res) => {
+const deleteCookieWithoutHTTPS = (req, res) => {
   res.setHeader('Set-Cookie', [
   `user_meta=${user}; SameSite=Lax; Path=/; Domain=localhost; Max-Age=0`,
   `auth_token=${token}; HttpOnly; SameSite=Lax; Path=/; Domain=localhost; Max-Age=0`
