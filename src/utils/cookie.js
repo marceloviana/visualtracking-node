@@ -6,7 +6,7 @@ const JWT_SECRET = process.env.JWT_SECRET
 const setCookie = async (req, res, user) => {
 
     const token = jwt.sign({user}, JWT_SECRET, { expiresIn: '1d' })
-  
+    console.log('host:::', req.headers.host)
     await res.cookie("auth_token", token, {
       "httpOnly": true,
       "secure": req.protocol == 'https'? true : false,
