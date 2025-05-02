@@ -1,9 +1,9 @@
 const cookie = require('cookie')
 const jwt = require('jsonwebtoken')
 const JWT_SECRET = process.env.JWT_SECRET
-const domain = '.infsite.org'
+const domain = process.env.ENVIRONMENT == "dev" ? 'localhost': '.infsite.org'
 const expiration = 60 * 60 * 12000
-
+console.log(domain)
 const setCookie = async (req, res, user) => {
 
     const token = jwt.sign({user}, JWT_SECRET, { expiresIn: '1d' })
@@ -27,14 +27,14 @@ const setCookie = async (req, res, user) => {
 
 const deleteCookie = async (req, res) => {
 
-  await res.cookie("auth_token", token, {
+  await res.cookie("auth_token", null, {
     "httpOnly": true,
     "secure": req.protocol == 'https'? true : false,
     "sameSite": "Lax",
     "maxAge": 0,
     "domain": domain
   });
-  await res.cookie("user_meta", user, {
+  await res.cookie("user_meta", null, {
     "httpOnly": false,
     "secure": req.protocol == 'https'? true : false,
     "sameSite": "Lax",

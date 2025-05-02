@@ -9,7 +9,7 @@ const User = mongoose.model('User', UserSchema);
 
 
 const createAppToken = async (data, token) => {
-
+  if (await UserApp.findOne({appName: data.appName}).select('_id').lean()) return `${data.appName} already exists`
   return await UserApp.insertOne({userApp: data.email, appName: data.appName, token: token})
 }
 

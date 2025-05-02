@@ -8,7 +8,7 @@ module.exports = (app, websocketInstance) => {
     app.post('/br-websocket/create-userApp', protectedMiddleware, async (req, res) => {
 
         let response = await createAppTokenController(req, res)
-        if (!response) return res.status(401).json('Token failed')
+        if (!response.appName) return res.status(400).json(response)
         return res.status(200).json(response)
     }) 
     /*
