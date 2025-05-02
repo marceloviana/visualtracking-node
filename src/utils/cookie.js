@@ -3,69 +3,43 @@ const cookie = require('cookie')
 const jwt = require('jsonwebtoken')
 const JWT_SECRET = process.env.JWT_SECRET
 
-const setCookieWithHTTPS = async (req, res, user, token) => {
-  console.log('HTTPS')
-  await res.cookie("auth_token", token, {
-                                  "httpOnly": true,
-                                  "secure": true,
-                                  "sameSite": "Lax",
-                                  "maxAge": 60 * 60 * 1000,
-                                  "domain": req.headers.host
-                                });
-  await res.cookie("user_meta", user, {
-                                  "httpOnly": false,
-                                  "secure": true,
-                                  "sameSite": "Lax",
-                                  "maxAge": 60 * 60 * 1000,
-                                  "domain": req.headers.host
-                                });                                
-}
-
-const setCookieWithoutHTTPS = (req, res, user, token) => {
-  console.log('HTTP')
-  res.setHeader('Set-Cookie', [
-    `user_meta=${user}; SameSite=Lax; Path=/; Domain=localhost; Max-Age=86400`,
-    `auth_token=${token}; HttpOnly; SameSite=Lax; Path=/; Domain=localhost; Max-Age=86400`
-  ]);
-}
-
-const deleteCookieWithHTTPS = (req, res, user, token) => {
-  res.setHeader('Set-Cookie', [
-    `user_meta=${user}; HttpOnly; Secure; SameSite=Lax Path=/; Domain=.infsite.org; Max-Age=0`,
-    `auth_token=${token}; HttpOnly; Secure; SameSite=Lax Path=/; Domain=.infsite.org; Max-Age=0`
-  ]);  
-}
-
-const deleteCookieWithoutHTTPS = (req, res) => {
-  res.setHeader('Set-Cookie', [
-  `user_meta=${user}; SameSite=Lax; Path=/; Domain=localhost; Max-Age=0`,
-  `auth_token=${token}; HttpOnly; SameSite=Lax; Path=/; Domain=localhost; Max-Age=0`
-  ]);
-}
-
 const setCookie = async (req, res, user) => {
 
     const token = jwt.sign({user}, JWT_SECRET, { expiresIn: '1d' })
   
-    if (req.protocol == 'https') {
-      await setCookieWithHTTPS(req, res, user, token)
-    } else {
-      await setCookieWithoutHTTPS(req, res, user, token)
-    }
+    await res.cookie("auth_token", token, {
+      "httpOnly": true,
+      "secure": req.protocol == 'https'? true : false,
+      "sameSite": "Lax",
+      "maxAge": 60 * 60 * 1000,
+      "domain": req.headers.host
+    });
+    await res.cookie("user_meta", user, {
+      "httpOnly": false,
+      "secure": req.protocol == 'https'? true : false,
+      "sameSite": "Lax",
+      "maxAge": 60 * 60 * 1000,
+      "domain": req.headers.host
+    });
 
 }
 
 const deleteCookie = async (req, res) => {
 
-  // res.setHeader('Set-Cookie', [
-  //   `user_meta=; ${req.protocol == 'https'? 'HttpOnly': ''}; Path=/; Max-Age=0`,
-  //   `auth_token=; ${req.protocol == 'https'? 'HttpOnly': ''}; Path=/; Max-Age=0`
-  // ]);
-  if (req.protocol == 'https') {
-    deleteCookieWithHTTPS(res)
-  } else {
-    deleteCookieWithoutHTTPS(res)
-  }  
+  await res.cookie("auth_token", token, {
+    "httpOnly": true,
+    "secure": req.protocol == 'https'? true : false,
+    "sameSite": "Lax",
+    "maxAge": 60 * 60 * 1000,
+    "domain": req.headers.host
+  });
+  await res.cookie("user_meta", user, {
+    "httpOnly": false,
+    "secure": req.protocol == 'https'? true : false,
+    "sameSite": "Lax",
+    "maxAge": 60 * 60 * 1000,
+    "domain": req.headers.host
+  });
 
 }
 
