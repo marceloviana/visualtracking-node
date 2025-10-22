@@ -1,11 +1,11 @@
 services:
-  redis:
+  redis-vt:
     image: redis:latest
     restart: always
     ports:
       - '6379:6379'
     hostname: redisserver
-  websocket:
+  websocket-vt:
     build:
       context: .
       dockerfile: Dockerfile-dev
@@ -20,4 +20,4 @@ services:
       - ENVIRONMENT=dev
     hostname: websocket
     depends_on:
-      - redis
+      - redis-vt

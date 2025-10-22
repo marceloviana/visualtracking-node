@@ -17,7 +17,13 @@ const checkCardinality = async (token, email) => {
   
   let userApp = await UserApp.findOne({token: token}).select(['userApp', 'appName', 'token']).lean()
   let userId = await User.findOne({email: email}).select('_id').lean()
-  userApp['userId'] = userId._id.toString()
+  try {
+
+    userApp['userId'] = userId._id.toString()
+  } catch (error) {
+    console.error("An error occurred:", error.message)
+    return null
+  }
 
   return userApp
 }
