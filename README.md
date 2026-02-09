@@ -113,5 +113,5 @@ Embora este serviço utilize apenas um banco chave-valor (Redis), foi desenhada 
 
 marceloalmeida.v1
 
-V.2.0.4
+V.2.0.5
 
