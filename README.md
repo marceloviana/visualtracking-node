@@ -110,3 +110,5 @@ socket.emit('GERAL', {
 Embora este serviço utilize apenas um banco chave-valor (Redis), foi desenhada uma modelagem para simplificar a comunicação entre os membros conectados ao serviço. A comunicação entre clientes é realizada por meio do **socket.id** do usuário. Para facilitar o gerenciamento, o modelo de dados no Redis vincula o e-mail do usuário conectado ao **socket.id**.
 
 #### Architect and developer: [Marcelo Almeida](https://www.linkedin.com/in/marcelovianaalmeida/)
+
+V.2.0.0
