@@ -111,4 +111,4 @@ Embora este serviço utilize apenas um banco chave-valor (Redis), foi desenhada 
 
 #### Architect and developer: [Marcelo Almeida](https://www.linkedin.com/in/marcelovianaalmeida/)
 
-V.2.0.3
+V.2.0.4
