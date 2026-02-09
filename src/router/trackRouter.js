@@ -19,4 +19,13 @@ module.exports = (app, websocketInstance) => {
         let response = await getTrackController(req, websocketInstance)
         return res.status(200).json(response)
     })
+
+    /*
+        endpoint for send message websocket by Rest from Arduino - No athenticate.
+    */
+    app.post('/br-websocket/waterLevel', async (req, res) => {
+
+        let response = await trackController(req, websocketInstance)
+        return res.status(200).json(response)
+    })    
 }

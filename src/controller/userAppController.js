@@ -4,7 +4,10 @@ const jwt = require('jsonwebtoken')
 const { createAppToken, checkCardinality, getUserApp, deleteUserApp } = require('../model/UserApp')
 const { getUserDataFromCookie } = require('../utils/cookie')
 
-const createAppTokenController = async (req) => {
+const createAppTokenController = async (req, res) => {
+    
+    if (!req.body.appName) return "appName undefined"
+    
     let cookies = cookie.parse(req.headers.cookie || '')
     let accessToken = cookies.auth_token
     let decoded = undefined

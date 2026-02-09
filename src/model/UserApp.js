@@ -9,7 +9,7 @@ const User = mongoose.model('User', UserSchema);
 
 
 const createAppToken = async (data, token) => {
-
+  if (await UserApp.findOne({appName: data.appName}).select('_id').lean()) return `${data.appName} already exists`
   return await UserApp.insertOne({userApp: data.email, appName: data.appName, token: token})
 }
 
@@ -17,7 +17,13 @@ const checkCardinality = async (token, email) => {
   
   let userApp = await UserApp.findOne({token: token}).select(['userApp', 'appName', 'token']).lean()
   let userId = await User.findOne({email: email}).select('_id').lean()
-  userApp['userId'] = userId._id.toString()
+  try {
+
+    userApp['userId'] = userId._id.toString()
+  } catch (error) {
+    console.error("An error occurred:", error.message)
+    return null
+  }
 
   return userApp
 }
