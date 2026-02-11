@@ -8,8 +8,13 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
+    environment: production
+    
     steps:
+    - name: get variable
+      run: |
+        echo ${{vars.HOSTNAME}}
+      
     - name: Checkout repo
       uses: actions/checkout@v3
 
