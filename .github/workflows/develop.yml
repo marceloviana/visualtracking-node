@@ -16,7 +16,7 @@ jobs:
         echo ${{vars.HOSTNAME}}
       
     - name: Checkout repo
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: "Creating ENV file"
       run: |
@@ -27,14 +27,14 @@ jobs:
         mkdir -p ~/.ssh
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
         chmod 600 ~/.ssh/id_ed25519
-        ssh-keyscan -p 9022 -H ${{ vars.RPI_HOST }} >> ~/.ssh/known_hosts
+        ssh-keyscan -p ${{ vars.RPI_PORT }} -H ${{ vars.RPI_HOST }} >> ~/.ssh/known_hosts
 
     - name: Copy files to Raspberry Pi
-      run: rsync -e "ssh -p 9022 -i ~/.ssh/id_ed25519" -avhz --delete ./ ${{ vars.RPI_USER }}@${{ vars.RPI_HOST }}:${{ vars.RPI_PATH }}
+      run: rsync -e "ssh -p ${{ vars.RPI_PORT }} -i ~/.ssh/id_ed25519" -avhz --delete ./ ${{ vars.RPI_USER }}@${{ vars.RPI_HOST }}:${{ vars.RPI_PATH }}
 
     - name: Restart app (via SSH)
       run: |
-        ssh -p 9022 -i ~/.ssh/id_ed25519 ${{ vars.RPI_USER }}@${{ vars.RPI_HOST }} << 'EOF'
+        ssh -p ${{ vars.RPI_PORT }} -i ~/.ssh/id_ed25519 ${{ vars.RPI_USER }}@${{ vars.RPI_HOST }} << 'EOF'
           cd ${{ vars.RPI_PATH }}
           docker-compose down
           docker-compose up -d --build
